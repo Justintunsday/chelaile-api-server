@@ -1,0 +1,76 @@
+name: Sync data
+
+on:
+  schedule:
+    # Daily at 03:17 UTC (11:17 Beijing time). GitHub may delay scheduled runs
+    # under load, which is fine for a static city list.
+    - cron: "17 3 * * *"
+  workflow_dispatch:
+    inputs:
+      force:
+        description: "Accept the new dataset even if the city count drops >40%"
+        type: boolean
+        default: false
+  push:
+    # Sync immediately whenever the script or its inputs change.
+    paths:
+      - "scripts/sync-data.ts"
+      - ".github/workflows/sync-data.yml"
+      - "package.json"
+      - "bun.lock"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: sync-data
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    env:
+      SYNC_DATA_FORCE: ${{ inputs.force }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: 1.x
+
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
+
+      - name: Refresh data/cities.json
+        id: sync
+        run: bun scripts/sync-data.ts
+
+      - name: Commit changes
+        id: commit
+        run: |
+          git add data/cities.json
+          if git diff --cached --quiet -- data/cities.json; then
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+            echo "Dataset unchanged; nothing to commit."
+          else
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git commit -m "chore(data): sync city list (${{ steps.sync.outputs.count }} cities)"
+            git push
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Job summary
+        if: always()
+        run: |
+          {
+            echo "## chelaile data sync"
+            echo ""
+            echo "| item | value |"
+            echo "| --- | --- |"
+            echo "| cities | ${{ steps.sync.outputs.count }} |"
+            echo "| hot cities | ${{ steps.sync.outputs.hot_count }} |"
+            echo "| previous count | ${{ steps.sync.outputs.previous_count }} |"
+            echo "| committed | ${{ steps.commit.outputs.changed }} |"
+            echo "| trigger | ${{ github.event_name }} |"
+          } >> "$GITHUB_STEP_SUMMARY"

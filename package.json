@@ -1,19 +1,24 @@
 {
-  "name": "chelaile-mcp-server",
-  "version": "1.1.0",
-  "description": "MCP server for Chelaile realtime bus data",
+  "name": "chelaile-api-server",
+  "version": "2.0.0",
+  "description": "HTTP API + MCP server for Chelaile (车来了) realtime bus, metro and transit data",
   "type": "module",
-  "main": "dist/index.js",
+  "main": "dist/api/server.js",
   "bin": {
+    "chelaile-api": "dist/api/server.js",
     "chelaile-mcp-server": "dist/index.js"
   },
   "files": [
-    "dist"
+    "dist",
+    "data",
+    "docs"
   ],
   "scripts": {
     "build": "tsc",
-    "start": "node dist/index.js",
-    "dev": "tsx watch src/index.ts",
+    "start": "node dist/api/server.js",
+    "start:mcp": "node dist/index.js",
+    "dev": "tsx watch src/api/server.ts",
+    "sync-data": "tsx scripts/sync-data.ts",
     "clean": "rm -rf dist",
     "inspect": "npm run build && npx @modelcontextprotocol/inspector node dist/index.js",
     "test": "bun test tests/unit",

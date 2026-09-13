@@ -177,7 +177,7 @@ interface LeanSubwayLine {
   directions: Array<{ destName: string; firstTime: string; lastTime: string }>;
 }
 
-interface LeanNearStop {
+export interface LeanNearStop {
   sId: string;
   sn: string;
   distance?: number;
@@ -189,7 +189,7 @@ interface LeanNearStop {
   subwayLines: LeanSubwayLine[];
 }
 
-interface LeanNearby {
+export interface LeanNearby {
   stops: LeanNearStop[];
 }
 
@@ -213,7 +213,7 @@ interface LeanMetro {
   color?: string;
 }
 
-interface LeanStation {
+export interface LeanStation {
   sId: string;
   sn: string;
   lat: number;
@@ -223,7 +223,7 @@ interface LeanStation {
   metros: LeanMetro[];
 }
 
-interface LeanStopDetail {
+export interface LeanStopDetail {
   stations: LeanStation[];
 }
 
@@ -350,6 +350,64 @@ export function reshapeStopDetail(raw: RawStopDetailResponse): LeanStopDetail {
   return { stations: result };
 }
 
+// ---------- fetch (shared by MCP tools and HTTP API) ----------
+
+export async function fetchNearbyStops(
+  cityId: string,
+  lat: string,
+  lng: string,
+  limit: number,
+): Promise<LeanNearby> {
+  const raw = await request<RawNearbyResponse>(
+    `${BASE_URL}/bus/stop!encryptedHomePage.action`,
+    {
+      ...DEFAULT_PARAMS,
+      cityId,
+      localCityId: "undefined",
+      lat,
+      lng,
+      geo_lat: lat,
+      geo_lng: lng,
+      type: "5",
+      permission: "0",
+    },
+  );
+  return reshapeNearby(raw, limit);
+}
+
+export interface StopDetailArgs {
+  cityId: string;
+  physicalStId: string;
+  namesakeStId?: string;
+  firstLineId?: string;
+  lat?: string;
+  lng?: string;
+}
+
+export async function fetchStopDetail(
+  args: StopDetailArgs,
+): Promise<LeanStopDetail> {
+  const raw = await request<RawStopDetailResponse>(
+    `${BASE_URL}/bus/stop!encryptedPhyStnDetail.action`,
+    {
+      ...DEFAULT_PARAMS,
+      cityId: args.cityId,
+      localCityId: args.cityId,
+      physicalStId: args.physicalStId,
+      namesakeStId: args.namesakeStId ?? "",
+      firstLineId: args.firstLineId ?? "",
+      stationId: "",
+      lat: args.lat ?? "",
+      lng: args.lng ?? "",
+      geo_lat: args.lat ?? "",
+      geo_lng: args.lng ?? "",
+      actionState: "1",
+      permission: "0",
+    },
+  );
+  return reshapeStopDetail(raw);
+}
+
 // ---------- markdown renderers ----------
 
 export function fmtEta(b: LeanBus): string {
@@ -471,21 +529,12 @@ Field notes:
     },
     async (params) => {
       try {
-        const raw = await request<RawNearbyResponse>(
-          `${BASE_URL}/bus/stop!encryptedHomePage.action`,
-          {
-            ...DEFAULT_PARAMS,
-            cityId: params.city_id,
-            localCityId: "undefined",
-            lat: params.lat,
-            lng: params.lng,
-            geo_lat: params.lat,
-            geo_lng: params.lng,
-            type: "5",
-            permission: "0",
-          },
+        const lean = await fetchNearbyStops(
+          params.city_id,
+          params.lat,
+          params.lng,
+          params.limit,
         );
-        const lean = reshapeNearby(raw, params.limit);
         return pickFormat(
           params.response_format as ResponseFormat,
           () => renderNearby(lean),
@@ -531,25 +580,14 @@ Multiple entries in stations[] mean the stop name maps to several physical platf
     },
     async (params) => {
       try {
-        const raw = await request<RawStopDetailResponse>(
-          `${BASE_URL}/bus/stop!encryptedPhyStnDetail.action`,
-          {
-            ...DEFAULT_PARAMS,
-            cityId: params.city_id,
-            localCityId: params.city_id,
-            physicalStId: params.physical_st_id,
-            namesakeStId: params.namesake_st_id ?? "",
-            firstLineId: params.first_line_id ?? "",
-            stationId: "",
-            lat: params.lat ?? "",
-            lng: params.lng ?? "",
-            geo_lat: params.lat ?? "",
-            geo_lng: params.lng ?? "",
-            actionState: "1",
-            permission: "0",
-          },
-        );
-        const lean = reshapeStopDetail(raw);
+        const lean = await fetchStopDetail({
+          cityId: params.city_id,
+          physicalStId: params.physical_st_id,
+          namesakeStId: params.namesake_st_id,
+          firstLineId: params.first_line_id,
+          lat: params.lat,
+          lng: params.lng,
+        });
         return pickFormat(
           params.response_format as ResponseFormat,
           () => renderStopDetail(lean),

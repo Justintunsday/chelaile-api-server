@@ -12,9 +12,14 @@ FROM oven/bun:1.2-alpine AS runtime
 
 WORKDIR /app
 ENV NODE_ENV=production
+ENV PORT=8787
+ENV HOST=0.0.0.0
 
 COPY package.json bun.lock ./
 RUN bun install --frozen-lockfile --production
 COPY --from=build /app/dist ./dist
+COPY data ./data
 
-ENTRYPOINT ["bun", "dist/index.js"]
+EXPOSE 8787
+
+ENTRYPOINT ["bun", "dist/api/server.js"]

@@ -125,6 +125,43 @@ export function reshape(
   };
 }
 
+// Fetch + reshape logic shared by the MCP tools and the HTTP API.
+export interface TransitPlanArgs {
+  cityId: string;
+  originName: string;
+  originLat: string;
+  originLng: string;
+  destName: string;
+  destLat: string;
+  destLng: string;
+  strategy: "0" | "1" | "2" | "3";
+}
+
+export async function fetchTransitPlan(
+  args: TransitPlanArgs,
+): Promise<TransitPlanResult> {
+  const raw = await request<RawTransitResponse>(
+    `${BASE_URL}/transfer/transit!integrate.action`,
+    {
+      ...DEFAULT_PARAMS,
+      cityId: args.cityId,
+      localCityId: args.cityId,
+      origin_name: args.originName,
+      origin_lat: args.originLat,
+      origin_lng: args.originLng,
+      dest_name: args.destName,
+      dest_lat: args.destLat,
+      dest_lng: args.destLng,
+      gpstype: "gcj",
+      geo_type: "gcj",
+      strategy: args.strategy,
+      isSelectTime: "0",
+      departure_time: String(Date.now()),
+    },
+  );
+  return reshape(raw, args.strategy);
+}
+
 export function renderPlan(d: TransitPlanResult): string {
   if (!d.plans.length) return "_No plans found._";
   const out: string[] = [
@@ -211,26 +248,16 @@ A top-level 'note' field is emitted when the response shape is suspicious — e.
     },
     async (params) => {
       try {
-        const raw = await request<RawTransitResponse>(
-          `${BASE_URL}/transfer/transit!integrate.action`,
-          {
-            ...DEFAULT_PARAMS,
-            cityId: params.city_id,
-            localCityId: params.city_id,
-            origin_name: params.origin_name,
-            origin_lat: params.origin_lat,
-            origin_lng: params.origin_lng,
-            dest_name: params.dest_name,
-            dest_lat: params.dest_lat,
-            dest_lng: params.dest_lng,
-            gpstype: "gcj",
-            geo_type: "gcj",
-            strategy: params.strategy,
-            isSelectTime: "0",
-            departure_time: String(Date.now()),
-          },
-        );
-        const shaped = reshape(raw, params.strategy as "0" | "1" | "2" | "3");
+        const shaped = await fetchTransitPlan({
+          cityId: params.city_id,
+          originName: params.origin_name,
+          originLat: params.origin_lat,
+          originLng: params.origin_lng,
+          destName: params.dest_name,
+          destLat: params.dest_lat,
+          destLng: params.dest_lng,
+          strategy: params.strategy as "0" | "1" | "2" | "3",
+        });
         return pickFormat(
           params.response_format as ResponseFormat,
           () => renderPlan(shaped),

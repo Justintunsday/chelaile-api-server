@@ -37,7 +37,7 @@ export const MyLocationInput = z
   })
   .strict();
 
-interface LeanIpLocation {
+export interface LeanIpLocation {
   lat: number;
   lng: number;
   gpsType: "wgs";
@@ -109,7 +109,7 @@ export function renderMyLocation(d: LeanIpLocation): string {
   return lines.join("\n");
 }
 
-interface LeanAddress {
+export interface LeanAddress {
   formatted: string;
   province: string;
   city: string;
@@ -133,6 +133,57 @@ export function reshapeReverseGeo(raw: ReverseGeoResponse): LeanAddress {
     township: a.township ?? "",
     citycode: a.citycode ?? "",
     adcode: a.adcode ?? "",
+  };
+}
+
+// Fetch + reshape logic shared by the MCP tools and the HTTP API.
+export async function fetchReverseGeo(
+  lat: string,
+  lng: string,
+): Promise<LeanAddress> {
+  const raw = await requestRaw<ReverseGeoResponse>(
+    `${BASE_URL}/transfer/transit!getLocationByGps.action`,
+    {
+      ...DEFAULT_PARAMS,
+      lat,
+      lng,
+      geo_lat: lat,
+      geo_lng: lng,
+      gpsType: "wgs",
+      gpstype: "wgs",
+      geo_type: "wgs",
+    },
+  );
+  return reshapeReverseGeo(raw);
+}
+
+export async function fetchMyLocation(ip?: string): Promise<LeanIpLocation> {
+  const data = await fetchIpApi(ip);
+  if (data.status !== "success") {
+    throw new Error(
+      `ip-api lookup failed: ${data.message ?? "unknown reason"}`,
+    );
+  }
+  // chelaile only covers Chinese mainland cities. ip-api returns the
+  // country as a localised name ("中国" with lang=zh-CN), so a fast
+  // check against the few known shapes covers the common cases.
+  const country = data.country ?? "";
+  const inChina = /中国|China/i.test(country);
+  const warning = inChina
+    ? undefined
+    : `IP geolocated outside mainland China (${country || "unknown"}). This is almost always a VPN/proxy exit — chelaile data won't match. Ask the user for their city or a landmark and resolve via bus_search instead.`;
+  return {
+    lat: data.lat ?? 0,
+    lng: data.lon ?? 0,
+    gpsType: "wgs",
+    city: data.city ?? "",
+    region: data.regionName ?? "",
+    country,
+    ip: data.query ?? "",
+    isp: data.isp,
+    precision: "city-level (~10 km); not suitable for stop-level queries",
+    inChina,
+    ...(warning ? { warning } : {}),
   };
 }
 
@@ -185,20 +236,7 @@ For municipalities (Shanghai/Beijing/Tianjin/Chongqing) the upstream emits an em
     },
     async (params) => {
       try {
-        const raw = await requestRaw<ReverseGeoResponse>(
-          `${BASE_URL}/transfer/transit!getLocationByGps.action`,
-          {
-            ...DEFAULT_PARAMS,
-            lat: params.lat,
-            lng: params.lng,
-            geo_lat: params.lat,
-            geo_lng: params.lng,
-            gpsType: "wgs",
-            gpstype: "wgs",
-            geo_type: "wgs",
-          },
-        );
-        const lean = reshapeReverseGeo(raw);
+        const lean = await fetchReverseGeo(params.lat, params.lng);
         return pickFormat(
           params.response_format as ResponseFormat,
           () => renderReverseGeo(lean),
@@ -253,35 +291,7 @@ Returns (json):
     },
     async (params) => {
       try {
-        const data = await fetchIpApi(params.ip);
-        if (data.status !== "success") {
-          return toUpstreamError(
-            new Error(
-              `ip-api lookup failed: ${data.message ?? "unknown reason"}`,
-            ),
-          );
-        }
-        // chelaile only covers Chinese mainland cities. ip-api returns the
-        // country as a localised name ("中国" with lang=zh-CN), so a fast
-        // check against the few known shapes covers the common cases.
-        const country = data.country ?? "";
-        const inChina = /中国|China/i.test(country);
-        const warning = inChina
-          ? undefined
-          : `IP geolocated outside mainland China (${country || "unknown"}). This is almost always a VPN/proxy exit — chelaile data won't match. Ask the user for their city or a landmark and resolve via bus_search instead.`;
-        const lean: LeanIpLocation = {
-          lat: data.lat ?? 0,
-          lng: data.lon ?? 0,
-          gpsType: "wgs",
-          city: data.city ?? "",
-          region: data.regionName ?? "",
-          country,
-          ip: data.query ?? "",
-          isp: data.isp,
-          precision: "city-level (~10 km); not suitable for stop-level queries",
-          inChina,
-          ...(warning ? { warning } : {}),
-        };
+        const lean = await fetchMyLocation(params.ip);
         return pickFormat(
           params.response_format as ResponseFormat,
           () => renderMyLocation(lean),

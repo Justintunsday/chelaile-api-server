@@ -164,6 +164,43 @@ export function reshapeSearch(raw: SearchResponse): LeanSearch {
   };
 }
 
+// Fetch + reshape logic shared by the MCP tools and the HTTP API.
+export async function fetchSearch(
+  cityId: string,
+  keyword: string,
+): Promise<LeanSearch> {
+  const raw = await request<SearchResponse>(
+    `${BASE_URL}/bus/query!nSearch.action`,
+    {
+      ...DEFAULT_PARAMS,
+      cityId,
+      localCityId: cityId,
+      key: keyword,
+      supportPhyStn: "true",
+    },
+  );
+  return reshapeSearch(raw);
+}
+
+export async function fetchSearchMore(
+  cityId: string,
+  keyword: string,
+  type: "1" | "2" | "3",
+): Promise<LeanSearch> {
+  const raw = await request<SearchResponse>(
+    `${BASE_URL}/bus/query!searchMore.action`,
+    {
+      ...DEFAULT_PARAMS,
+      cityId,
+      localCityId: cityId,
+      key: keyword,
+      type,
+      supportPhyStn: "true",
+    },
+  );
+  return reshapeSearch(raw);
+}
+
 export function renderSearch(d: LeanSearch): string {
   const out: string[] = [`# Search results (highlight: ${d.highlightKey || "-"})`];
   if (d.lines.length) {
@@ -265,17 +302,7 @@ Returns (json):
     },
     async (params) => {
       try {
-        const raw = await request<SearchResponse>(
-          `${BASE_URL}/bus/query!nSearch.action`,
-          {
-            ...DEFAULT_PARAMS,
-            cityId: params.city_id,
-            localCityId: params.city_id,
-            key: params.keyword,
-            supportPhyStn: "true",
-          },
-        );
-        const lean = reshapeSearch(raw);
+        const lean = await fetchSearch(params.city_id, params.keyword);
         return pickFormat(
           params.response_format as ResponseFormat,
           () => renderSearch(lean),
@@ -310,18 +337,11 @@ Returns: same shape as bus_search but only the requested category is populated.`
     },
     async (params) => {
       try {
-        const raw = await request<SearchResponse>(
-          `${BASE_URL}/bus/query!searchMore.action`,
-          {
-            ...DEFAULT_PARAMS,
-            cityId: params.city_id,
-            localCityId: params.city_id,
-            key: params.keyword,
-            type: params.type,
-            supportPhyStn: "true",
-          },
+        const lean = await fetchSearchMore(
+          params.city_id,
+          params.keyword,
+          params.type,
         );
-        const lean = reshapeSearch(raw);
         return pickFormat(
           params.response_format as ResponseFormat,
           () => renderSearch(lean),

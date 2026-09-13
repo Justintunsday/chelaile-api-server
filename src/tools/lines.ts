@@ -263,7 +263,7 @@ interface LeanStation {
   metros: Array<{ name: string; lineNo: string; color?: string }>;
 }
 
-interface LeanLineDetail {
+export interface LeanLineDetail {
   line: LeanLine;
   stations: LeanStation[];
   buses: LeanBusLine[];
@@ -284,7 +284,7 @@ interface LeanLineDetail {
   hint?: string;
 }
 
-interface LeanLineRealtime {
+export interface LeanLineRealtime {
   // Upstream does NOT return startSn on this endpoint; only endSn. Callers who
   // need startSn must read it from bus_get_line_detail.
   line: Pick<LeanLine, "lineId" | "name" | "direction" | "endSn">;
@@ -294,18 +294,18 @@ interface LeanLineRealtime {
   note: string;
 }
 
-interface LeanLineBuses {
+export interface LeanLineBuses {
   targetOrder: number;
   buses: LeanLineBus[];
 }
 
-interface LeanLineRoute {
+export interface LeanLineRoute {
   pointCount: number;
   stopCount: number;
   points: Array<{ lat: number; lng: number; stopOrder?: number }>;
 }
 
-interface LeanTimetable {
+export interface LeanTimetable {
   line: Pick<LeanLine, "lineId" | "name" | "direction" | "startSn" | "endSn">;
   timeTableType: number;
   mode: "scheduled" | "interval" | "special" | "unknown";
@@ -313,7 +313,7 @@ interface LeanTimetable {
   note?: string;
 }
 
-interface LeanRefresh {
+export interface LeanRefresh {
   lines: Array<{
     line: Pick<LeanLine, "lineId" | "name" | "direction" | "endSn">;
     depDesc?: string;
@@ -531,6 +531,152 @@ export function reshapeRefresh(raw: RawRefreshResponse): LeanRefresh {
   };
 }
 
+// ---------- fetch (shared by MCP tools and HTTP API) ----------
+
+export async function fetchLineDetail(
+  cityId: string,
+  lineId: string,
+  lat?: string,
+  lng?: string,
+): Promise<LeanLineDetail> {
+  const raw = await request<RawLineDetailResponse>(
+    `${BASE_URL}/bus/line!encryptedLineDetail.action`,
+    {
+      ...DEFAULT_PARAMS,
+      cityId,
+      localCityId: cityId,
+      lineId,
+      lat: lat ?? "",
+      lng: lng ?? "",
+      geo_lat: lat ?? "",
+      geo_lng: lng ?? "",
+    },
+  );
+  return reshapeLineDetail(raw);
+}
+
+export async function fetchLineRoute(
+  cityId: string,
+  lineId: string,
+  includeShape: boolean,
+): Promise<LeanLineRoute> {
+  const raw = await request<RawLineRouteResponse>(
+    `${BASE_URL}/bus/line!lineRoute.action`,
+    {
+      ...DEFAULT_PARAMS,
+      cityId,
+      localCityId: cityId,
+      lineId,
+    },
+  );
+  return reshapeLineRoute(raw, includeShape);
+}
+
+export interface LineRealtimeArgs {
+  cityId: string;
+  lineId: string;
+  targetOrder: string;
+  stationId: string;
+  lat: string;
+  lng: string;
+}
+
+export async function fetchLineRealtime(
+  args: LineRealtimeArgs,
+): Promise<LeanLineRealtime> {
+  const raw = await request<RawBusDetailResponse>(
+    `${BASE_URL}/bus/line!encryptedBusDetail.action`,
+    {
+      ...DEFAULT_PARAMS,
+      cshow: "busDetail",
+      specail: "0",
+      specialType: "undefined",
+      cityId: args.cityId,
+      localCityId: args.cityId,
+      lineId: args.lineId,
+      targetOrder: args.targetOrder,
+      specialTargetOrder: args.targetOrder,
+      stationId: args.stationId,
+      lat: args.lat,
+      lng: args.lng,
+      geo_lat: args.lat,
+      geo_lng: args.lng,
+      userId: "",
+      h5Id: "",
+      unionId: "",
+      accountId: "",
+      secret: "",
+    },
+  );
+  return reshapeLineRealtime(raw);
+}
+
+export interface LineBusesArgs {
+  cityId: string;
+  lineId: string;
+  targetOrder: string;
+  stationName: string;
+}
+
+export async function fetchLineBuses(
+  args: LineBusesArgs,
+): Promise<LeanLineBuses> {
+  const raw = await request<RawBusListResponse>(
+    `${BASE_URL}/bus/line!busList.action`,
+    {
+      ...DEFAULT_PARAMS,
+      cityId: args.cityId,
+      localCityId: args.cityId,
+      lineId: args.lineId,
+      targetOrder: args.targetOrder,
+      stationName: args.stationName,
+      nextStationName: "",
+    },
+  );
+  return reshapeLineBuses(raw);
+}
+
+export interface TimetableArgs {
+  cityId: string;
+  lineId: string;
+  lineNo: string;
+  direction: "0" | "1";
+}
+
+export async function fetchTimetable(
+  args: TimetableArgs,
+): Promise<LeanTimetable> {
+  const raw = await request<RawTimetableResponse>(
+    `${BASE_URL}/bus/line!preStartTimetableNew.action`,
+    {
+      ...DEFAULT_PARAMS,
+      cityId: args.cityId,
+      lineId: args.lineId,
+      lineNo: args.lineNo,
+      direction: args.direction,
+      tabType: "0",
+    },
+  );
+  return reshapeTimetable(raw);
+}
+
+export async function fetchRefresh(
+  cityId: string,
+  lineStn: string,
+): Promise<LeanRefresh> {
+  const raw = await request<RawRefreshResponse>(
+    `${BASE_URL}/bus/line!encryptedTsfRealInfos.action`,
+    {
+      ...DEFAULT_PARAMS,
+      reqSrc: "2",
+      cityId,
+      localCityId: cityId,
+      lineStn,
+    },
+  );
+  return reshapeRefresh(raw);
+}
+
 // ---------- markdown renderers ----------
 
 export function renderLineDetail(d: LeanLineDetail): string {
@@ -673,20 +819,12 @@ Each station carries:
     },
     async (params) => {
       try {
-        const raw = await request<RawLineDetailResponse>(
-          `${BASE_URL}/bus/line!encryptedLineDetail.action`,
-          {
-            ...DEFAULT_PARAMS,
-            cityId: params.city_id,
-            localCityId: params.city_id,
-            lineId: params.line_id,
-            lat: params.lat ?? "",
-            lng: params.lng ?? "",
-            geo_lat: params.lat ?? "",
-            geo_lng: params.lng ?? "",
-          },
+        const lean = await fetchLineDetail(
+          params.city_id,
+          params.line_id,
+          params.lat,
+          params.lng,
         );
-        const lean = reshapeLineDetail(raw);
         return pickFormat(
           params.response_format as ResponseFormat,
           () => renderLineDetail(lean),
@@ -731,16 +869,11 @@ Markdown mode only summarises counts; request JSON to read coordinates.`,
     },
     async (params) => {
       try {
-        const raw = await request<RawLineRouteResponse>(
-          `${BASE_URL}/bus/line!lineRoute.action`,
-          {
-            ...DEFAULT_PARAMS,
-            cityId: params.city_id,
-            localCityId: params.city_id,
-            lineId: params.line_id,
-          },
+        const lean = await fetchLineRoute(
+          params.city_id,
+          params.line_id,
+          params.include_shape,
         );
-        const lean = reshapeLineRoute(raw, params.include_shape);
         return pickFormat(
           params.response_format as ResponseFormat,
           () => renderLineRoute(lean),
@@ -797,31 +930,14 @@ Field notes:
     },
     async (params) => {
       try {
-        const raw = await request<RawBusDetailResponse>(
-          `${BASE_URL}/bus/line!encryptedBusDetail.action`,
-          {
-            ...DEFAULT_PARAMS,
-            cshow: "busDetail",
-            specail: "0",
-            specialType: "undefined",
-            cityId: params.city_id,
-            localCityId: params.city_id,
-            lineId: params.line_id,
-            targetOrder: params.target_order,
-            specialTargetOrder: params.target_order,
-            stationId: params.station_id,
-            lat: params.lat,
-            lng: params.lng,
-            geo_lat: params.lat,
-            geo_lng: params.lng,
-            userId: "",
-            h5Id: "",
-            unionId: "",
-            accountId: "",
-            secret: "",
-          },
-        );
-        const lean = reshapeLineRealtime(raw);
+        const lean = await fetchLineRealtime({
+          cityId: params.city_id,
+          lineId: params.line_id,
+          targetOrder: params.target_order,
+          stationId: params.station_id,
+          lat: params.lat,
+          lng: params.lng,
+        });
         return pickFormat(
           params.response_format as ResponseFormat,
           () => renderLineRealtime(lean),
@@ -867,19 +983,12 @@ Returns (json):
     },
     async (params) => {
       try {
-        const raw = await request<RawBusListResponse>(
-          `${BASE_URL}/bus/line!busList.action`,
-          {
-            ...DEFAULT_PARAMS,
-            cityId: params.city_id,
-            localCityId: params.city_id,
-            lineId: params.line_id,
-            targetOrder: params.target_order,
-            stationName: params.station_name,
-            nextStationName: "",
-          },
-        );
-        const lean = reshapeLineBuses(raw);
+        const lean = await fetchLineBuses({
+          cityId: params.city_id,
+          lineId: params.line_id,
+          targetOrder: params.target_order,
+          stationName: params.station_name,
+        });
         return pickFormat(
           params.response_format as ResponseFormat,
           () => renderLineBuses(lean),
@@ -927,18 +1036,12 @@ Returns (json):
     },
     async (params) => {
       try {
-        const raw = await request<RawTimetableResponse>(
-          `${BASE_URL}/bus/line!preStartTimetableNew.action`,
-          {
-            ...DEFAULT_PARAMS,
-            cityId: params.city_id,
-            lineId: params.line_id,
-            lineNo: params.line_no,
-            direction: params.direction,
-            tabType: "0",
-          },
-        );
-        const lean = reshapeTimetable(raw);
+        const lean = await fetchTimetable({
+          cityId: params.city_id,
+          lineId: params.line_id,
+          lineNo: params.line_no,
+          direction: params.direction,
+        });
         return pickFormat(
           params.response_format as ResponseFormat,
           () => renderTimetable(lean),
@@ -989,17 +1092,7 @@ Soft cap: up to 10 quadruples per call.`,
     },
     async (params) => {
       try {
-        const raw = await request<RawRefreshResponse>(
-          `${BASE_URL}/bus/line!encryptedTsfRealInfos.action`,
-          {
-            ...DEFAULT_PARAMS,
-            reqSrc: "2",
-            cityId: params.city_id,
-            localCityId: params.city_id,
-            lineStn: params.line_stn,
-          },
-        );
-        const lean = reshapeRefresh(raw);
+        const lean = await fetchRefresh(params.city_id, params.line_stn);
         return pickFormat(
           params.response_format as ResponseFormat,
           () => renderRefresh(lean),

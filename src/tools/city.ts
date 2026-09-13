@@ -37,7 +37,7 @@ export const CityConfigInput = z
   })
   .strict();
 
-interface LeanCity {
+export interface LeanCity {
   cityId: string;
   cityName: string;
   pinyin?: string;
@@ -45,8 +45,40 @@ interface LeanCity {
   hot: boolean;
 }
 
-interface LeanCityList {
+export interface LeanCityList {
   cities: LeanCity[];
+}
+
+export type LeanCityConfig = Pick<
+  CityConfigResponse,
+  "maxInterval" | "arrivingStationLimitSeconds" | "busDisplayConfig"
+>;
+
+// Fetch + reshape logic shared by the MCP tools and the HTTP API.
+export async function fetchCityList(hotOnly: boolean): Promise<LeanCityList> {
+  const raw = await requestPlain<CityListResponse>(
+    `${BASE_DOMAIN}/wwd/ncitylist`,
+    { ...DEFAULT_PARAMS },
+  );
+  return reshapeCityList(raw, hotOnly);
+}
+
+export async function fetchCityConfig(
+  cityId: string,
+): Promise<LeanCityConfig> {
+  const raw = await request<CityConfigResponse>(
+    `${BASE_URL}/bus/cityMaxInterval.action`,
+    {
+      ...DEFAULT_PARAMS,
+      cityId,
+      localCityId: cityId,
+    },
+  );
+  return {
+    maxInterval: raw.maxInterval,
+    arrivingStationLimitSeconds: raw.arrivingStationLimitSeconds,
+    busDisplayConfig: raw.busDisplayConfig,
+  };
 }
 
 export function reshapeCityList(
@@ -125,11 +157,7 @@ Use when: the user mentions a city name and you don't have its ID. The hot set c
     },
     async (params) => {
       try {
-        const raw = await requestPlain<CityListResponse>(
-          `${BASE_DOMAIN}/wwd/ncitylist`,
-          { ...DEFAULT_PARAMS },
-        );
-        const lean = reshapeCityList(raw, params.hot_only);
+        const lean = await fetchCityList(params.hot_only);
         return pickFormat(
           params.response_format as ResponseFormat,
           () => renderCityList(lean),
@@ -169,22 +197,10 @@ Returns (json):
     },
     async (params) => {
       try {
-        const raw = await request<CityConfigResponse>(
-          `${BASE_URL}/bus/cityMaxInterval.action`,
-          {
-            ...DEFAULT_PARAMS,
-            cityId: params.city_id,
-            localCityId: params.city_id,
-          },
-        );
-        const lean = {
-          maxInterval: raw.maxInterval,
-          arrivingStationLimitSeconds: raw.arrivingStationLimitSeconds,
-          busDisplayConfig: raw.busDisplayConfig,
-        };
+        const lean = await fetchCityConfig(params.city_id);
         return pickFormat(
           params.response_format as ResponseFormat,
-          () => renderCityConfig(params.city_id, raw),
+          () => renderCityConfig(params.city_id, lean),
           lean as unknown as Record<string, unknown>,
         );
       } catch (e) {
