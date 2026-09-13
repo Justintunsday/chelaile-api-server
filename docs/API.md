@@ -34,7 +34,7 @@
 ### 从源码运行
 
 ```bash
-git clone https://github.com/<your-name>/chelaile-api-server.git
+git clone https://github.com/Justintunsday/chelaile-api-server.git
 cd chelaile-api-server
 npm install
 npm run build
@@ -723,10 +723,10 @@ bun scripts/sync-data.ts out.json --force   # 指定输出文件 / 跳过骤减�
 
 ```bash
 # GitHub raw（不建议高并发，仅适合小流量）
-DATA_BASE_URL="https://raw.githubusercontent.com/<user>/chelaile-api-server/main/data"
+DATA_BASE_URL="https://raw.githubusercontent.com/Justintunsday/chelaile-api-server/main/data"
 
 # jsDelivr（有 CDN 缓存，推荐）
-DATA_BASE_URL="https://cdn.jsdelivr.net/gh/<user>/chelaile-api-server@main/data"
+DATA_BASE_URL="https://cdn.jsdelivr.net/gh/Justintunsday/chelaile-api-server@main/data"
 ```
 
 API 会请求 `${DATA_BASE_URL}/cities.json`。
@@ -751,7 +751,7 @@ API 会请求 `${DATA_BASE_URL}/cities.json`。
 ```bash
 npm ci
 npm run build
-PORT=8787 DATA_BASE_URL="https://cdn.jsdelivr.net/gh/<user>/<repo>@main/data" npm start
+PORT=8787 DATA_BASE_URL="https://cdn.jsdelivr.net/gh/Justintunsday/chelaile-api-server@main/data" npm start
 ```
 
 进程管理建议使用 `systemd` / `pm2` / `docker restart=always`。
@@ -761,7 +761,7 @@ PORT=8787 DATA_BASE_URL="https://cdn.jsdelivr.net/gh/<user>/<repo>@main/data" np
 ```bash
 docker build -t chelaile-api .
 docker run -d --name chelaile-api -p 8787:8787 \
-  -e DATA_BASE_URL="https://cdn.jsdelivr.net/gh/<user>/<repo>@main/data" \
+  -e DATA_BASE_URL="https://cdn.jsdelivr.net/gh/Justintunsday/chelaile-api-server@main/data" \
   -e API_KEY="your-secret" \
   chelaile-api
 ```

@@ -19,7 +19,7 @@
 ## 快速开始
 
 ```bash
-git clone https://github.com/<your-name>/chelaile-api-server.git
+git clone https://github.com/Justintunsday/chelaile-api-server.git
 cd chelaile-api-server
 npm install
 npm run build
@@ -83,7 +83,7 @@ npm run sync-data   # 手动同步城市列表
 部署时指向你的仓库（jsDelivr 有 CDN 缓存，推荐）：
 
 ```bash
-DATA_BASE_URL="https://cdn.jsdelivr.net/gh/<user>/chelaile-api-server@main/data" npm start
+DATA_BASE_URL="https://cdn.jsdelivr.net/gh/Justintunsday/chelaile-api-server@main/data" npm start
 ```
 
 > 首次使用工作流需在仓库 **Settings → Actions → General → Workflow permissions** 开启
