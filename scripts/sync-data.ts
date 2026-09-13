@@ -5,7 +5,7 @@ import { appendFile, mkdir, readFile, writeFile } from "node:fs/promises";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { fetchCityList } from "../src/tools/city.js";
-import { parseCityDataset } from "../src/api/data.js";
+import { parseCityDataset, type CityDataset } from "../src/api/data.js";
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 
@@ -50,12 +50,12 @@ async function withRetry<T>(
   throw lastError;
 }
 
-async function previousCount(): Promise<number> {
+async function readPrevious(): Promise<CityDataset | null> {
   try {
     const raw = await readFile(target, "utf-8");
-    return parseCityDataset(JSON.parse(raw))?.cities.length ?? 0;
+    return parseCityDataset(JSON.parse(raw));
   } catch {
-    return 0;
+    return null;
   }
 }
 
@@ -72,20 +72,37 @@ async function main(): Promise<void> {
     );
   }
 
-  const previous = await previousCount();
+  const previous = await readPrevious();
+  const previousCount = previous?.cities.length ?? 0;
   if (
     !force &&
-    previous > 0 &&
-    cities.length < previous * (1 - MAX_SHRINK_RATIO)
+    previousCount > 0 &&
+    cities.length < previousCount * (1 - MAX_SHRINK_RATIO)
   ) {
     throw new Error(
-      `Refusing to overwrite the dataset: city count dropped from ${previous} to ${cities.length} ` +
+      `Refusing to overwrite the dataset: city count dropped from ${previousCount} to ${cities.length} ` +
         `(more than ${Math.round(MAX_SHRINK_RATIO * 100)}%). ` +
         `Re-run with --force (or SYNC_DATA_FORCE=true) to accept.`,
     );
   }
 
   const hotCount = cities.filter((c) => c.hot).length;
+  await setOutput("count", cities.length);
+  await setOutput("hot_count", hotCount);
+  await setOutput("previous_count", previousCount);
+
+  // Only rewrite the file when the actual list changed. Avoids a daily
+  // timestamp-only commit and makes concurrent runs idempotent.
+  const unchanged =
+    previous != null &&
+    JSON.stringify(previous.cities) === JSON.stringify(cities);
+  if (unchanged && !force) {
+    log(
+      `Dataset unchanged (${cities.length} cities, ${hotCount} hot); leaving ${target} untouched.`,
+    );
+    return;
+  }
+
   const dataset = {
     updatedAt: new Date().toISOString(),
     source: "chelaile:/wwd/ncitylist",
@@ -96,12 +113,8 @@ async function main(): Promise<void> {
   await mkdir(dirname(target), { recursive: true });
   await writeFile(target, `${JSON.stringify(dataset, null, 2)}\n`, "utf-8");
   log(
-    `Wrote ${target} (${cities.length} cities, ${hotCount} hot; previous ${previous}).`,
+    `Wrote ${target} (${cities.length} cities, ${hotCount} hot; previous ${previousCount}).`,
   );
-
-  await setOutput("count", cities.length);
-  await setOutput("hot_count", hotCount);
-  await setOutput("previous_count", previous);
 }
 
 main().catch((error) => {
