@@ -89,7 +89,25 @@ DATA_BASE_URL="https://cdn.jsdelivr.net/gh/Justintunsday/chelaile-api-server@mai
 > 首次使用工作流需在仓库 **Settings → Actions → General → Workflow permissions** 开启
 > **Read and write permissions**。
 
-## Docker
+## 部署（把仓库变成在线 API）
+
+> **GitHub Pages / Actions 本身不能当这个 API 的服务器。** Pages 只提供静态文件，无法向
+> 上游发请求、做 MD5 签名和 AES 解密；Actions 也无法暴露常驻公网端口。仓库里的
+> `pages.yml` 只用来托管 **使用文档**：https://justintunsday.github.io/chelaile-api-server/
+
+正确姿势是让仓库作为「部署源」，由平台自动构建并运行：
+
+| 平台 | 方式 | 特点 |
+| --- | --- | --- |
+| **Render** | 点击部署按钮（读取仓库内 `render.yaml`） | 免费套餐；15 分钟无请求休眠，冷启动约 1 分钟 |
+| **Railway** | 新建项目 → 选择本仓库（自动读取 `railway.json`） | 试用额度；无冷启动 |
+| **Vercel** | vercel.com/new 导入本仓库，零配置识别 `src/server.ts` | 免费；Serverless 有 10s 默认超时（已配 `maxDuration: 30`），大陆访问不稳定 |
+| **VPS / Docker** | `docker build -t chelaile-api . && docker run -d -p 8787:8787 chelaile-api` | 完全可控，推荐生产 |
+| **Codespaces（临时）** | 仓库 → Code → Codespaces 启动，`npm ci && npm run build && npm start`，把 8787 端口设为 Public | 获得临时公网地址，仅用于测试 |
+
+Render 一键部署：<https://render.com/deploy?repo=https://github.com/Justintunsday/chelaile-api-server>
+
+Vercel 零配置入口是仓库里的 `src/server.ts`（自动调用 `app.listen()`）；Docker 用户可用：
 
 ```bash
 docker build -t chelaile-api .

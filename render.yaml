@@ -1,0 +1,15 @@
+# Render Blueprint: https://render.com/docs/blueprint-spec
+# One-click deploy: https://render.com/deploy?repo=https://github.com/Justintunsday/chelaile-api-server
+services:
+  - type: web
+    name: chelaile-api
+    runtime: docker
+    plan: free
+    region: singapore
+    healthCheckPath: /v1/health
+    autoDeploy: true
+    envVars:
+      - key: DATA_BASE_URL
+        value: https://cdn.jsdelivr.net/gh/Justintunsday/chelaile-api-server@main/data
+      - key: LOG_REQUESTS
+        value: "false"

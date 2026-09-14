@@ -768,13 +768,22 @@ docker run -d --name chelaile-api -p 8787:8787 \
 
 镜像内已包含构建产物与 `data/` 数据集。
 
-### 5.3 托管平台
+### 5.3 托管平台（从 GitHub 一键部署）
 
-本服务是一个常驻 Node HTTP 进程，推荐部署在任何支持 Docker 的平台
-（Railway、Render、Fly.io、Zeabur、VPS 等）。
+> **GitHub Pages / GitHub Actions 不能直接充当 API 服务器。** Pages 只能托管静态文件，
+> 无法执行上游请求、MD5 签名与 AES 解密；Actions 无法暴露常驻公网端口。本仓库用
+> Pages 托管使用文档，用 Actions 定时更新数据集；API 进程需部署到下方平台。
+
+| 平台 | 部署方式 | 说明 |
+| --- | --- | --- |
+| **Render** | 一键 Blueprint：<https://render.com/deploy?repo=https://github.com/Justintunsday/chelaile-api-server> | 读取仓库 `render.yaml` + Dockerfile；免费套餐 15 分钟无请求休眠 |
+| **Railway** | New Project → Deploy from GitHub repo | 自动读取 `railway.json` 与 Dockerfile |
+| **Vercel** | vercel.com/new 导入本仓库 | 零配置识别 `src/server.ts`（自动 `app.listen()`）；`vercel.json` 已将 `maxDuration` 设为 30s；大陆访问不稳定 |
+| **VPS** | `npm ci && npm run build && npm start` 或 Docker | 完全可控，可用 systemd/pm2 守护 |
+| **GitHub Codespaces（临时）** | Code → Codespaces，`npm ci && npm run build && npm start`，将 8787 端口改为 Public | 仅用于临时测试，会休眠且有免费额度限制 |
 
 - **建议部署在中国大陆或就近区域**：`/v1/my-location` 使用服务器出口 IP，且回源 `web.chelaile.net.cn` 时大陆网络更稳定。
-- **Serverless 平台（Vercel/Netlify Functions）**：需要把 `createApp` 的监听封装成函数入口，仓库未内置；如需可自行适配。
+- **Serverless 超时**：上游请求超时为 15s，部署 Vercel 等 Serverless 平台时请保留 `maxDuration ≥ 20s` 的配置（仓库默认 30s）。
 
 ### 5.4 反向代理
 
