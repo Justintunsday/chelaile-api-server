@@ -18,6 +18,8 @@
     "start": "node dist/api/server.js",
     "start:mcp": "node dist/index.js",
     "dev": "tsx watch src/api/server.ts",
+    "dev:worker": "wrangler dev -c worker/wrangler.toml",
+    "deploy:worker": "wrangler deploy -c worker/wrangler.toml",
     "sync-data": "tsx scripts/sync-data.ts",
     "clean": "rm -rf dist",
     "inspect": "npm run build && npx @modelcontextprotocol/inspector node dist/index.js",
@@ -36,11 +38,13 @@
     "zod": "^3.23.8"
   },
   "devDependencies": {
+    "@cloudflare/workers-types": "^5.20260914.1",
     "@release-it/conventional-changelog": "^11.0.0",
     "@types/bun": "^1.1.14",
     "@types/node": "^22.10.0",
     "release-it": "^20.0.1",
     "tsx": "^4.19.2",
-    "typescript": "^5.7.2"
+    "typescript": "^5.7.2",
+    "wrangler": "^4.131.2"
   }
 }

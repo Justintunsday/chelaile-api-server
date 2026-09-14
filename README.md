@@ -101,11 +101,24 @@ DATA_BASE_URL="https://cdn.jsdelivr.net/gh/Justintunsday/chelaile-api-server@mai
 
 | 平台 | 方式 | 特点 |
 | --- | --- | --- |
+| **Cloudflare Workers** | `npx wrangler deploy -c worker/wrangler.toml`（需绑自定义域名） | 免运维、无冷启动；免费额度大；大陆流量走境外节点，建议搭配自定义域名 |
 | **Vercel** | vercel.com/new 导入本仓库（仓库内 `vercel.json` 已声明 Services + 容器构建） | 已实际部署验证：https://chelaile-api-server.vercel.app |
 | **Render** | 点击部署按钮（读取仓库内 `render.yaml`） | 免费套餐；但注册需银行卡验证；15 分钟无请求休眠 |
 | **Railway** | 新建项目 → 选择本仓库（自动读取 `railway.json`） | 试用额度；无冷启动 |
 | **VPS / Docker** | `docker build -t chelaile-api . && docker run -d -p 8787:8787 chelaile-api` | 完全可控，推荐生产 |
 | **Codespaces（临时）** | 仓库 → Code → Codespaces 启动，`npm ci && npm run build && npm start`，把 8787 端口设为 Public | 获得临时公网地址，仅用于测试 |
+
+Cloudflare Workers（`worker/` 目录复用同一套业务逻辑，本地可 `npm run dev:worker`）：
+
+```bash
+npx wrangler login
+npx wrangler deploy -c worker/wrangler.toml
+# 部署后到 Dashboard → Workers & Pages → chelaile-api → Settings → Domains & Routes
+# 绑定自定义域名（*.workers.dev 在大陆被屏蔽，必须用自定义域名）
+```
+
+可选密钥：`npx wrangler secret put API_KEY -c worker/wrangler.toml`；
+`DATA_BASE_URL` 与 `CORS_ORIGIN` 在 `worker/wrangler.toml` 的 `[vars]` 中配置。
 
 Vercel 部署说明：仓库 `vercel.json` 使用新的 **Services** 配置（`runtime: "container"` + 全路径 rewrite），
 直接 Import 仓库即可构建 Dockerfile；不需要手动改 Framework Preset。生产环境变量建议加

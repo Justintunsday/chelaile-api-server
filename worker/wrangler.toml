@@ -1,0 +1,18 @@
+name = "chelaile-api"
+main = "index.ts"
+compatibility_date = "2026-09-01"
+compatibility_flags = ["nodejs_compat", "brotli_content_encoding"]
+
+# Custom domain: add it in the Cloudflare dashboard under
+# Workers & Pages -> chelaile-api -> Settings -> Domains & Routes.
+# Optional: avoid the *.workers.dev domain by setting workers_dev = false.
+
+[vars]
+# Static city dataset (GitHub / jsDelivr). Falls back to the bundled
+# data/cities.json and then to the upstream API if unreachable.
+DATA_BASE_URL = "https://cdn.jsdelivr.net/gh/Justintunsday/chelaile-api-server@main/data"
+# CORS_ORIGIN = "*"
+# API_KEY is a secret: `npx wrangler secret put API_KEY -c worker/wrangler.toml`
+
+[observability]
+enabled = true

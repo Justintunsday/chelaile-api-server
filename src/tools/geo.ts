@@ -1,7 +1,11 @@
 import { z } from "zod";
 import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
-import * as http from "node:http";
-import { BASE_URL, DEFAULT_PARAMS, requestRaw } from "../http-client.js";
+import {
+  BASE_URL,
+  DEFAULT_PARAMS,
+  isCloudflareWorker,
+  requestRaw,
+} from "../http-client.js";
 import {
   ResponseFormat,
   ResponseFormatSchema,
@@ -64,10 +68,21 @@ interface IpApiResponse {
   isp?: string;
 }
 
-function fetchIpApi(ip?: string): Promise<IpApiResponse> {
+async function fetchIpApi(ip?: string): Promise<IpApiResponse> {
   const path = ip
     ? `/json/${encodeURIComponent(ip)}?lang=zh-CN`
     : "/json/?lang=zh-CN";
+
+  if (isCloudflareWorker()) {
+    // ip-api.com's free tier is HTTP-only; Workers can subrequest plain HTTP.
+    const res = await fetch(`http://ip-api.com${path}`, {
+      headers: { Accept: "application/json" },
+      signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS),
+    });
+    return JSON.parse(await res.text()) as IpApiResponse;
+  }
+
+  const http = await import("node:http");
   return new Promise((resolve, reject) => {
     const req = http.request(
       {

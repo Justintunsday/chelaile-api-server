@@ -1,6 +1,4 @@
 import { createHash, createDecipheriv } from "node:crypto";
-import * as https from "node:https";
-import * as http from "node:http";
 import * as zlib from "node:zlib";
 import {
   AES_KEY,
@@ -24,7 +22,9 @@ export function cryptoSign(params: Record<string, string>): string {
 
 export function decryptResult(ciphertext: string): string {
   const key = Buffer.from(AES_KEY, "utf8");
-  const decipher = createDecipheriv("aes-256-ecb", key, null);
+  // ECB has no IV. Node accepts `null`; Workers' node:crypto requires a
+  // non-null value, so pass an empty buffer (valid for ECB in both runtimes).
+  const decipher = createDecipheriv("aes-256-ecb", key, Buffer.alloc(0));
   let decrypted = decipher.update(ciphertext, "base64", "utf8");
   decrypted += decipher.final("utf8");
   return decrypted;
@@ -64,7 +64,53 @@ export function decompress(buffer: Buffer, encoding: string | undefined): Buffer
   return buffer;
 }
 
-function rawGet(url: URL): Promise<{ body: string }> {
+export function isCloudflareWorker(): boolean {
+  try {
+    return (
+      typeof navigator !== "undefined" &&
+      navigator.userAgent === "Cloudflare-Workers"
+    );
+  } catch {
+    return false;
+  }
+}
+
+// fetch()-based transport used on Cloudflare Workers. The runtime negotiates
+// and transparently decompresses content-encoding, so no zlib step is needed;
+// hop-by-hop headers that the runtime owns must be omitted. Waiting on the
+// origin does not consume Worker CPU, so allow a longer timeout than Node and
+// retry once on transient network failures.
+const WORKER_REQUEST_TIMEOUT_MS = 20_000;
+const WORKER_FETCH_ATTEMPTS = 2;
+
+async function fetchGet(url: URL): Promise<{ body: string }> {
+  const headers: Record<string, string> = { ...REQUEST_HEADERS };
+  delete headers.Host;
+  delete headers.Connection;
+
+  let lastError: unknown;
+  for (let attempt = 1; attempt <= WORKER_FETCH_ATTEMPTS; attempt++) {
+    try {
+      const res = await fetch(url, {
+        headers,
+        signal: AbortSignal.timeout(WORKER_REQUEST_TIMEOUT_MS),
+      });
+      return { body: await res.text() };
+    } catch (error) {
+      lastError = error;
+      if (attempt < WORKER_FETCH_ATTEMPTS) {
+        await new Promise((r) => setTimeout(r, 500));
+      }
+    }
+  }
+  throw lastError;
+}
+
+async function nodeGet(url: URL): Promise<{ body: string }> {
+  const [https, http] = await Promise.all([
+    import("node:https"),
+    import("node:http"),
+  ]);
   const client = url.protocol === "https:" ? https : http;
   return new Promise((resolve, reject) => {
     const req = client.request(
@@ -98,6 +144,10 @@ function rawGet(url: URL): Promise<{ body: string }> {
     req.on("error", reject);
     req.end();
   });
+}
+
+function rawGet(url: URL): Promise<{ body: string }> {
+  return isCloudflareWorker() ? fetchGet(url) : nodeGet(url);
 }
 
 export async function request<T = unknown>(
