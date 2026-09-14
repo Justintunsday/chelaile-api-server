@@ -776,14 +776,15 @@ docker run -d --name chelaile-api -p 8787:8787 \
 
 | 平台 | 部署方式 | 说明 |
 | --- | --- | --- |
-| **Render** | 一键 Blueprint：<https://render.com/deploy?repo=https://github.com/Justintunsday/chelaile-api-server> | 读取仓库 `render.yaml` + Dockerfile；免费套餐 15 分钟无请求休眠 |
+| **Vercel** | vercel.com/new 导入本仓库 | 仓库 `vercel.json` 已声明 **Services + container**（构建 Dockerfile 并将全路径转发给服务），无需手动设置 Framework Preset；已实际部署验证 |
+| **Render** | 一键 Blueprint：<https://render.com/deploy?repo=https://github.com/Justintunsday/chelaile-api-server> | 读取仓库 `render.yaml` + Dockerfile；免费套餐需银行卡验证，且 15 分钟无请求休眠 |
 | **Railway** | New Project → Deploy from GitHub repo | 自动读取 `railway.json` 与 Dockerfile |
-| **Vercel** | vercel.com/new 导入本仓库 | 零配置识别 `src/server.ts`（自动 `app.listen()`）；`vercel.json` 已将 `maxDuration` 设为 30s；大陆访问不稳定 |
 | **VPS** | `npm ci && npm run build && npm start` 或 Docker | 完全可控，可用 systemd/pm2 守护 |
 | **GitHub Codespaces（临时）** | Code → Codespaces，`npm ci && npm run build && npm start`，将 8787 端口改为 Public | 仅用于临时测试，会休眠且有免费额度限制 |
 
 - **建议部署在中国大陆或就近区域**：`/v1/my-location` 使用服务器出口 IP，且回源 `web.chelaile.net.cn` 时大陆网络更稳定。
-- **Serverless 超时**：上游请求超时为 15s，部署 Vercel 等 Serverless 平台时请保留 `maxDuration ≥ 20s` 的配置（仓库默认 30s）。
+- **Vercel 环境变量**：建议在项目 Production 环境设置 `DATA_BASE_URL=https://cdn.jsdelivr.net/gh/Justintunsday/chelaile-api-server@main/data`，否则 `/v1/cities` 会回源上游。
+- **超时**：上游单次请求超时 15s；Serverless 类平台请确保函数超时 ≥ 20s（Vercel 容器服务不受旧版 `functions.maxDuration` 配置影响，该项目已改用 Services 模式）。
 
 ### 5.4 反向代理
 

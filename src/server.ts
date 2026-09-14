@@ -1,5 +1,6 @@
-// Zero-config Node server entrypoint for platforms that auto-detect servers
-// (e.g. Vercel looks for `server.ts` in the project root or `src/`).
+// Generic Node server entrypoint that calls `listen()` at module startup.
+// Useful for PaaS/hosts that auto-detect a `server` file; the primary Docker
+// entrypoint remains `dist/api/server.js`.
 // Local usage: `node dist/server.js` (same behavior as `npm start`).
 import { createApp } from "./api/server.js";
 import { loadConfig } from "./api/config.js";

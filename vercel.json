@@ -1,8 +1,15 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
-  "functions": {
-    "src/server.ts": {
-      "maxDuration": 30
+  "services": {
+    "chelaile-api": {
+      "runtime": "container",
+      "root": "."
     }
-  }
+  },
+  "rewrites": [
+    {
+      "source": "/(.*)",
+      "destination": { "service": "chelaile-api" }
+    }
+  ]
 }

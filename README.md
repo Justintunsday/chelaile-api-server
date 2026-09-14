@@ -99,15 +99,19 @@ DATA_BASE_URL="https://cdn.jsdelivr.net/gh/Justintunsday/chelaile-api-server@mai
 
 | 平台 | 方式 | 特点 |
 | --- | --- | --- |
-| **Render** | 点击部署按钮（读取仓库内 `render.yaml`） | 免费套餐；15 分钟无请求休眠，冷启动约 1 分钟 |
+| **Vercel** | vercel.com/new 导入本仓库（仓库内 `vercel.json` 已声明 Services + 容器构建） | 已实际部署验证：https://chelaile-api-server.vercel.app |
+| **Render** | 点击部署按钮（读取仓库内 `render.yaml`） | 免费套餐；但注册需银行卡验证；15 分钟无请求休眠 |
 | **Railway** | 新建项目 → 选择本仓库（自动读取 `railway.json`） | 试用额度；无冷启动 |
-| **Vercel** | vercel.com/new 导入本仓库，零配置识别 `src/server.ts` | 免费；Serverless 有 10s 默认超时（已配 `maxDuration: 30`），大陆访问不稳定 |
 | **VPS / Docker** | `docker build -t chelaile-api . && docker run -d -p 8787:8787 chelaile-api` | 完全可控，推荐生产 |
 | **Codespaces（临时）** | 仓库 → Code → Codespaces 启动，`npm ci && npm run build && npm start`，把 8787 端口设为 Public | 获得临时公网地址，仅用于测试 |
 
+Vercel 部署说明：仓库 `vercel.json` 使用新的 **Services** 配置（`runtime: "container"` + 全路径 rewrite），
+直接 Import 仓库即可构建 Dockerfile；不需要手动改 Framework Preset。生产环境变量建议加
+`DATA_BASE_URL=https://cdn.jsdelivr.net/gh/Justintunsday/chelaile-api-server@main/data`。
+
 Render 一键部署：<https://render.com/deploy?repo=https://github.com/Justintunsday/chelaile-api-server>
 
-Vercel 零配置入口是仓库里的 `src/server.ts`（自动调用 `app.listen()`）；Docker 用户可用：
+Docker 用户可用：
 
 ```bash
 docker build -t chelaile-api .
