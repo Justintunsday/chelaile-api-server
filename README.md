@@ -4,7 +4,9 @@
 线路时刻、车辆实时位置、附近站点、关键词搜索、线路轨迹、公交+地铁换乘规划。
 无需登录、无需账号、开箱即用；同时保留原 MCP 服务，可继续在 Claude Code / Cursor 中使用。
 
-- **完整使用文档：[docs/API.md](docs/API.md)**
+- **在线服务（已验证）：** <https://chelaile-api-server.vercel.app>
+- **使用手册（Wiki）：** <https://github.com/Justintunsday/chelaile-api-server/wiki>
+- **完整使用文档：[docs/API.md](docs/API.md)** ｜ 文档站：<https://justintunsday.github.io/chelaile-api-server/>
 - 默认监听：`http://127.0.0.1:8787`
 - 全部端点：`GET /`（返回端点索引）
 

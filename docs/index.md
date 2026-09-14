@@ -9,7 +9,9 @@ title: 车来了 API 文档
 请按下述方式把仓库部署到能运行 Node 进程的平台，再把请求发到部署地址。
 
 - [完整 API 使用文档](API.html)
+- [使用手册（GitHub Wiki）](https://github.com/Justintunsday/chelaile-api-server/wiki)
 - [部署说明（README）](https://github.com/Justintunsday/chelaile-api-server#部署把仓库变成在线-api)
+- 在线服务（已验证）：<https://chelaile-api-server.vercel.app>
 - 仓库源码：<https://github.com/Justintunsday/chelaile-api-server>
 - 静态数据（jsDelivr CDN）：<https://cdn.jsdelivr.net/gh/Justintunsday/chelaile-api-server@main/data/cities.json>
 
