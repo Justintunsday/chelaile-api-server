@@ -3,9 +3,11 @@ main = "index.ts"
 compatibility_date = "2026-09-01"
 compatibility_flags = ["nodejs_compat", "brotli_content_encoding"]
 
-# Custom domain: add it in the Cloudflare dashboard under
-# Workers & Pages -> chelaile-api -> Settings -> Domains & Routes.
+# Custom domain bound to this Worker (must be a zone in the same account).
 # Optional: avoid the *.workers.dev domain by setting workers_dev = false.
+[[routes]]
+pattern = "ts-api.tundrey.com"
+custom_domain = true
 
 [vars]
 # Static city dataset (GitHub / jsDelivr). Falls back to the bundled
