@@ -70,6 +70,16 @@ type Handler = (ctx: Ctx) => Promise<Response>;
 const ISOLATE_START = Date.now();
 const CITY_CACHE_TTL_MS = 6 * 60 * 60 * 1000;
 
+// Documentation site: reverse-proxied from GitHub Pages so it stays current
+// (the Pages workflow keeps rebuilding it) while being served from the
+// Cloudflare edge — GitHub Pages itself is often slow or unreachable in
+// mainland China.
+const DOCS_HOSTNAME = "chelaile-api-docs.tundrey.com";
+const API_HOSTNAME = "ts-api.tundrey.com";
+const DOCS_UPSTREAM = "https://justintunsday.github.io";
+const DOCS_PATH_PREFIX = "/chelaile-api-server";
+const DOCS_CACHE_SECONDS = 600;
+
 const NO_STORE = { "Cache-Control": "no-store" };
 const CACHE_HOUR = { "Cache-Control": "public, max-age=3600" };
 const CACHE_TEN_MIN = { "Cache-Control": "public, max-age=600" };
@@ -135,6 +145,76 @@ function isAuthorized(request: Request, url: URL, apiKey: string): boolean {
   const auth = request.headers.get("authorization");
   if (auth?.startsWith("Bearer ") && auth.slice(7) === apiKey) return true;
   return url.searchParams.get("key") === apiKey;
+}
+
+// ---------- docs proxy ----------
+
+async function handleDocs(request: Request, url: URL): Promise<Response> {
+  const method = request.method.toUpperCase();
+  if (method !== "GET" && method !== "HEAD") {
+    return errorResponse(methodNotAllowed(method, url.pathname));
+  }
+  if (url.pathname === "/v1" || url.pathname.startsWith("/v1/")) {
+    return Response.redirect(
+      `https://${API_HOSTNAME}${url.pathname}${url.search}`,
+      302,
+    );
+  }
+
+  // GitHub Pages serves the site under /chelaile-api-server; internal links
+  // already use that prefix, while root-relative requests need it added.
+  const upstreamPath = url.pathname.startsWith(DOCS_PATH_PREFIX)
+    ? url.pathname
+    : `${DOCS_PATH_PREFIX}${url.pathname === "/" ? "/" : url.pathname}`;
+  const upstreamUrl = `${DOCS_UPSTREAM}${upstreamPath}${url.search}`;
+
+  const cache = (globalThis as { caches?: { default: Cache } }).caches?.default;
+  const cacheKey = new Request(upstreamUrl, { method: "GET" });
+  if (cache) {
+    try {
+      const cached = await cache.match(cacheKey);
+      if (cached) return new Response(cached.body, cached);
+    } catch {
+      // cache unavailable; fall through to the network
+    }
+  }
+
+  let upstream: Response;
+  try {
+    upstream = await fetch(upstreamUrl, {
+      headers: { "user-agent": "chelaile-docs-proxy" },
+      signal: AbortSignal.timeout(15_000),
+    });
+  } catch (error) {
+    return json(
+      502,
+      {
+        error: {
+          code: "docs_upstream_unavailable",
+          message: error instanceof Error ? error.message : String(error),
+        },
+      },
+      NO_STORE,
+    );
+  }
+
+  const headers = new Headers(upstream.headers);
+  if (upstream.ok) {
+    headers.set("Cache-Control", `public, max-age=${DOCS_CACHE_SECONDS}`);
+  }
+  const response = new Response(upstream.body, {
+    status: upstream.status,
+    statusText: upstream.statusText,
+    headers,
+  });
+  if (upstream.ok && cache) {
+    try {
+      await cache.put(cacheKey, response.clone());
+    } catch {
+      // ignore cache write failures
+    }
+  }
+  return response;
 }
 
 // ---------- city dataset (remote → bundled → upstream) ----------
@@ -428,6 +508,11 @@ const routes: Record<string, Handler> = {
 export default {
   async fetch(request: Request, env: Env): Promise<Response> {
     const url = new URL(request.url);
+
+    if (url.hostname === DOCS_HOSTNAME) {
+      return handleDocs(request, url);
+    }
+
     const method = request.method.toUpperCase();
     const configured = env.CORS_ORIGIN?.trim() || "*";
     const cors = corsFor(configured, request.headers.get("origin"));

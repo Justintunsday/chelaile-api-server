@@ -6,7 +6,7 @@
 
 - **在线服务（已验证）：** Cloudflare Workers <https://ts-api.tundrey.com> ｜ Vercel <https://chelaile-api-server.vercel.app>
 - **使用手册（Wiki）：** <https://github.com/Justintunsday/chelaile-api-server/wiki>
-- **完整使用文档：[docs/API.md](docs/API.md)** ｜ 文档站：<https://justintunsday.github.io/chelaile-api-server/>
+- **完整使用文档：[docs/API.md](docs/API.md)** ｜ 文档站：<https://chelaile-api-docs.tundrey.com/>
 - 默认监听：`http://127.0.0.1:8787`
 - 全部端点：`GET /`（返回端点索引）
 
