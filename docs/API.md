@@ -31,6 +31,16 @@
 
 ## 1. 快速开始
 
+### 已有在线实例
+
+- Cloudflare Workers（推荐，无冷启动）：<https://ts-api.tundrey.com>
+- Vercel：<https://chelaile-api-server.vercel.app>
+
+```bash
+curl "https://ts-api.tundrey.com/v1/health"
+curl "https://ts-api.tundrey.com/v1/search?city_id=034&keyword=71"
+```
+
 ### 从源码运行
 
 ```bash
