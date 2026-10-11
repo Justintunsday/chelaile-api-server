@@ -1,47 +1,49 @@
-# 车来了 HTTP API 使用文档
+# Chelaile HTTP API Guide
 
-`chelaile-api-server` 把原先只支持 MCP（stdio）的车来了实时公交能力，封装为一套只读的 HTTP JSON API。
-无需登录、无需账号、无需上游 Key，启动即用。
+`chelaile-api-server` exposes Chelaile realtime transit capabilities, previously available only through MCP (stdio), as a read-only HTTP JSON API.
+No login, account, or upstream API key is required. Start the server and use it immediately.
 
-- 默认地址：`http://127.0.0.1:8787`
-- 所有业务端点均在 `/v1` 前缀下，全部使用 `GET`（另有 `HEAD`、`OPTIONS` 支持）
-- 响应统一为 JSON（UTF-8）
-- 端点索引：`GET /` 或 `GET /v1`
+- Default address: `http://127.0.0.1:8787`
+- All application endpoints use the `/v1` prefix and `GET` (`HEAD` and `OPTIONS` are also supported).
+- All responses are UTF-8 JSON.
 
----
-
-## 目录
-
-- [1. 快速开始](#1-快速开始)
-- [2. 通用约定](#2-通用约定)
-- [3. 端点参考](#3-端点参考)
-  - [基础信息](#31-基础信息)
-  - [地理与定位](#32-地理与定位)
-  - [搜索](#33-搜索)
-  - [站点](#34-站点)
-  - [线路](#35-线路)
-  - [换乘规划](#36-换乘规划)
-- [4. 静态数据托管在 GitHub](#4-静态数据托管在-github)
-- [5. 部署](#5-部署)
-- [6. 环境变量](#6-环境变量)
-- [7. 常见问题](#7-常见问题)
-- [8. 与 MCP 版本的关系](#8-与-mcp-版本的关系)
+> Chinese place names, line names, and status values in examples are preserved as returned by the upstream; translating the documentation does not change API data.
+- Endpoint index: `GET /` or `GET /v1`
 
 ---
 
-## 1. 快速开始
+## Contents
 
-### 已有在线实例
+- [1. Quick start](#1-quick-start)
+- [2. General conventions](#2-general-conventions)
+- [3. Endpoint reference](#3-endpoint-reference)
+  - [Basic information](#31-basic-information)
+  - [Geolocation](#32-geolocation)
+  - [Search](#33-search)
+  - [Stops](#34-stops)
+  - [Lines](#35-lines)
+  - [Transit planning](#36-transit-planning)
+- [4. Hosting static data on GitHub](#4-hosting-static-data-on-github)
+- [5. Deployment](#5-deployment)
+- [6. Environment variables](#6-environment-variables)
+- [7. FAQ](#7-faq)
+- [8. MCP compatibility](#8-mcp-compatibility)
 
-- Cloudflare Workers（推荐，无冷启动）：<https://ts-api.tundrey.com>
-- Vercel：<https://chelaile-api-server.vercel.app>
+---
+
+## 1. Quick start
+
+### Hosted instances
+
+- Cloudflare Workers (recommended; no cold starts): <https://ts-api.tundrey.com>
+- Vercel: <https://chelaile-api-server.vercel.app>
 
 ```bash
 curl "https://ts-api.tundrey.com/v1/health"
 curl "https://ts-api.tundrey.com/v1/search?city_id=034&keyword=71"
 ```
 
-### 从源码运行
+### Run from source
 
 ```bash
 git clone https://github.com/Justintunsday/chelaile-api-server.git
@@ -52,7 +54,7 @@ npm start
 # chelaile-api v2.0.0 listening on http://0.0.0.0:8787 (data: ./data)
 ```
 
-### 第一个请求
+### Your first request
 
 ```bash
 curl "http://127.0.0.1:8787/v1/cities"
@@ -71,44 +73,44 @@ curl "http://127.0.0.1:8787/v1/cities"
 }
 ```
 
-### 查询"71 路还有多久到"
+### Check when bus 71 will arrive
 
 ```bash
-# 1. 找到你需要的数据（城市 ID、线路 ID、站点 ID、站点序号）
+# 1. Find the city ID, line ID, stop ID, and stop order.
 curl "http://127.0.0.1:8787/v1/search?city_id=034&keyword=71"
 
-# 2. 查询实时到站
+# 2. Query realtime arrivals.
 curl "http://127.0.0.1:8787/v1/lines/realtime?city_id=034&line_id=21283603183&target_order=2&station_id=021-15232&lat=31.2304&lng=121.4737"
 ```
 
 ---
 
-## 2. 通用约定
+## 2. General conventions
 
-### 2.1 认证
+### 2.1 Authentication
 
-默认不启用。设置环境变量 `API_KEY` 后，所有 `/v1/*` 请求必须携带以下任意一种凭证：
+Authentication is disabled by default. When `API_KEY` is set, all `/v1/*` requests must include one of these credentials:
 
-| 方式 | 示例 |
+| Method | Example |
 | --- | --- |
-| 请求头 `X-API-Key` | `curl -H "X-API-Key: <key>" ...` |
+| `X-API-Key` header | `curl -H "X-API-Key: <key>" ...` |
 | Bearer Token | `curl -H "Authorization: Bearer <key>" ...` |
-| 查询参数 | `curl "...?key=<key>"` |
+| Query parameter | `curl "...?key=<key>"` |
 
-缺失或错误凭证返回 `401 unauthorized`。`GET /`（端点索引）不受保护。
+Missing or invalid credentials return `401 unauthorized`. `GET /` (the endpoint index) is public.
 
 ### 2.2 CORS
 
-- 默认 `CORS_ORIGIN=*`，允许任意来源的浏览器请求。
-- 也可配置为白名单（逗号分隔）：`CORS_ORIGIN=https://a.com,https://b.com`。
-- 非白名单来源返回 `403 origin_not_allowed`，预检请求（`OPTIONS`）返回 `204`。
+- `CORS_ORIGIN=*` allows browser requests from any origin by default.
+- To use an allowlist, separate origins with commas: `CORS_ORIGIN=https://a.com,https://b.com`.
+- Disallowed origins return `403 origin_not_allowed` for application requests. Preflight requests (`OPTIONS`) return `204`; disallowed origins receive no CORS allow headers.
 
-### 2.3 限流
+### 2.3 Rate limiting
 
-默认关闭。设置 `RATE_LIMIT_PER_MINUTE` 后按客户端 IP 做每分钟固定窗口限流，超出返回
-`429 rate_limited` 并带 `Retry-After: 60`。反向代理场景请确保透传 `X-Forwarded-For`。
+Disabled by default. Set `RATE_LIMIT_PER_MINUTE` to apply a fixed one-minute window per client IP. Excess requests return
+`429 rate_limited` with `Retry-After: 60`. Behind a reverse proxy, forward `X-Forwarded-For`.
 
-### 2.4 错误格式
+### 2.4 Error format
 
 ```json
 {
@@ -120,61 +122,61 @@ curl "http://127.0.0.1:8787/v1/lines/realtime?city_id=034&line_id=21283603183&ta
 }
 ```
 
-| HTTP | code | 说明 |
+| HTTP | code | Description |
 | --- | --- | --- |
-| 400 | `invalid_params` | 参数缺失、格式错误、越界 |
-| 401 | `unauthorized` | 已启用 API Key 但未提供 / 不正确 |
-| 403 | `origin_not_allowed` | 来源不在 CORS 白名单 |
-| 404 | `not_found` | 路径不存在 |
-| 405 | `method_not_allowed` | 使用了非 GET/HEAD/OPTIONS 方法 |
-| 429 | `rate_limited` | 触发限流 |
-| 502 | `upstream_error` | 上游返回异常或响应无法解析 |
-| 504 | `upstream_timeout` | 上游超时（默认 15s） |
+| 400 | `invalid_params` | Missing, malformed, or out-of-range parameters |
+| 401 | `unauthorized` | API key authentication is enabled, but the key is missing or invalid |
+| 403 | `origin_not_allowed` | Origin is not in the CORS allowlist |
+| 404 | `not_found` | Unknown path |
+| 405 | `method_not_allowed` | Method other than GET/HEAD/OPTIONS |
+| 429 | `rate_limited` | Rate limit exceeded |
+| 502 | `upstream_error` | Unexpected or unparseable upstream response |
+| 504 | `upstream_timeout` | Upstream timeout (15 seconds by default) |
 
-### 2.5 坐标系（重要）
+### 2.5 Coordinate systems (important)
 
-上游对不同的接口要求不同的坐标系，传错会导致**查询结果位置偏差几百米**：
+The upstream endpoints require different coordinate systems. Using the wrong one can **shift results by hundreds of meters**:
 
-| 坐标系 | 使用场景 |
+| Coordinate system | Usage |
 | --- | --- |
-| **WGS-84** | `/v1/stops/nearby`、`/v1/lines/realtime`、`/v1/lines/detail`（lat/lng 可选）、`/v1/reverse-geocode` 的入参；`stations[].lat/lng`、`wgsLat/wgsLng` 均为 WGS-84 |
-| **GCJ-02** | `/v1/transit/plan` 的入参；`/v1/search` 返回的 `pois[].lat/lng` 为 GCJ-02 |
+| **WGS-84** | Inputs to `/v1/stops/nearby`, `/v1/lines/realtime`, `/v1/lines/detail` (optional lat/lng), and `/v1/reverse-geocode`; `stations[].lat/lng` and `wgsLat/wgsLng` are WGS-84 |
+| **GCJ-02** | Inputs to `/v1/transit/plan`; `pois[].lat/lng` returned by `/v1/search` are GCJ-02 |
 
-若手上只有 WGS-84 且需要 GCJ-02（或反向转换），请先做坐标转换再调用。
+Convert coordinates before calling an endpoint if you have WGS-84 but need GCJ-02, or vice versa.
 
-### 2.6 常用字段说明
+### 2.6 Common fields
 
-| 字段 | 含义 |
+| Field | Meaning |
 | --- | --- |
-| `capacity` | 车厢拥挤度：`0` 宽松、`1` 适中、`2` 拥挤 |
-| `arrivalTime` | 毫秒级 Unix 时间戳；`-1` 表示未知 |
-| `travelTime` | 距离目标站剩余秒数；`-1` 表示未知 |
-| `eta` | `{ travelTime, arrivalTime, displayTime? }`，仅最近一辆驶向目标站的车辆有值，其余为 `null` |
-| `isSubway` | 是否为地铁线路 |
-| `distance` | 米；部分场景缺失 |
-| 时间字段 | 均为北京时间（上游当地时区） |
+| `capacity` | Crowding: `0` uncrowded, `1` moderate, `2` crowded |
+| `arrivalTime` | Unix timestamp in milliseconds; `-1` means unknown |
+| `travelTime` | Seconds remaining until the target stop; `-1` means unknown |
+| `eta` | `{ travelTime, arrivalTime, displayTime? }`; populated only for the nearest bus heading to the target stop; `null` for other buses |
+| `isSubway` | Whether this is a metro line |
+| `distance` | Meters; omitted in some responses |
+| Time fields | Beijing time (the upstream local timezone, UTC+8) |
 
-### 2.7 缓存
+### 2.7 Caching
 
-| 端点 | `Cache-Control` |
+| Endpoint | `Cache-Control` |
 | --- | --- |
-| `/v1/cities` | `public, max-age=3600`（`live=true` 时为 `no-store`） |
+| `/v1/cities` | `public, max-age=3600` (`no-store` when `live=true`) |
 | `/v1/cities/config` | `public, max-age=600` |
 | `/v1/reverse-geocode` | `public, max-age=86400` |
-| `/v1/lines/route`、`/v1/lines/timetable` | `public, max-age=86400 / 3600` |
-| 实时类端点 | `no-store` |
+| `/v1/lines/route`, `/v1/lines/timetable` | `public, max-age=86400 / 3600` |
+| Realtime endpoints | `no-store` |
 
-CDN / 浏览器会遵循以上缓存策略；如需强制最新实时数据，实时端点本身不缓存。
+CDNs and browsers follow these cache headers. Realtime endpoints are not cached.
 
 ---
 
-## 3. 端点参考
+## 3. Endpoint reference
 
-### 3.1 基础信息
+### 3.1 Basic information
 
 #### GET /v1/health
 
-存活探针，无参数。
+Liveness probe. No parameters.
 
 ```json
 {
@@ -188,29 +190,29 @@ CDN / 浏览器会遵循以上缓存策略；如需强制最新实时数据，�
 
 #### GET /v1/cities
 
-支持城市列表。默认直接从 `data/cities.json`（可由 GitHub 托管）读取，避免每次请求上游。
+Lists supported cities. By default, reads `data/cities.json` (which can be hosted on GitHub) instead of calling the upstream on every request.
 
-| 参数 | 类型 | 默认 | 说明 |
+| Parameter | Type | Default | Description |
 | --- | --- | --- | --- |
-| `hot_only` | boolean | `true` | 只返回热门城市（约 12 个）。`false` 返回全部约 480 个 |
-| `live` | boolean | `false` | `true` 时忽略本地/远程数据集，直接回源上游 |
+| `hot_only` | boolean | `true` | Return popular cities only (about 12); `false` returns all approximately 480 cities |
+| `live` | boolean | `false` | When `true`, bypass local/remote datasets and query the upstream directly |
 
-boolean 参数接受 `true/false`、`1/0`。
+Boolean parameters accept `true/false` and `1/0`.
 
-响应字段：
+Response fields:
 
-| 字段 | 说明 |
+| Field | Description |
 | --- | --- |
-| `origin` | 数据来源：`file`（本地文件）、`github`（`DATA_BASE_URL`）、`upstream`（实时上游） |
-| `updatedAt` | 数据集快照时间 |
-| `count` / `total` | 过滤后数量 / 数据集总数 |
+| `origin` | Data source: `file` (local file), `github` (`DATA_BASE_URL`), or `upstream` (live upstream) |
+| `updatedAt` | Dataset snapshot timestamp |
+| `count` / `total` | Count after filtering / total dataset size |
 | `cities[]` | `{ cityId, cityName, pinyin?, supportSubway, hot }` |
 
 #### GET /v1/cities/config
 
-| 参数 | 类型 | 必填 | 说明 |
+| Parameter | Type | Required | Description |
 | --- | --- | --- | --- |
-| `city_id` | string | 是 | 城市 ID，如 `034`（上海）、`027`（北京） |
+| `city_id` | string | Yes | City ID, e.g. `034` (Shanghai) or `027` (Beijing) |
 
 ```json
 {
@@ -220,16 +222,16 @@ boolean 参数接受 `true/false`、`1/0`。
 }
 ```
 
-### 3.2 地理与定位
+### 3.2 Geolocation
 
 #### GET /v1/reverse-geocode
 
-WGS-84 经纬度 → 中文地址。
+WGS-84 latitude/longitude → address in Chinese.
 
-| 参数 | 类型 | 必填 | 说明 |
+| Parameter | Type | Required | Description |
 | --- | --- | --- | --- |
-| `lat` | number string | 是 | WGS-84 纬度，如 `31.230416` |
-| `lng` | number string | 是 | WGS-84 经度，如 `121.473701` |
+| `lat` | number string | Yes | WGS-84 latitude, e.g. `31.230416` |
+| `lng` | number string | Yes | WGS-84 longitude, e.g. `121.473701` |
 
 ```json
 {
@@ -243,15 +245,15 @@ WGS-84 经纬度 → 中文地址。
 }
 ```
 
-> 直辖市上游返回空 `city`，本项目会自动回填为 `province`。
+> For directly administered municipalities, the upstream returns an empty `city`; this server fills it with `province`.
 
 #### GET /v1/my-location
 
-按 IP 估算位置，精度为城市级（约 10 km），不足以定位公交站。
+Estimates location by IP at city-level precision (about 10 km), insufficient for finding individual bus stops.
 
-| 参数 | 类型 | 必填 | 说明 |
+| Parameter | Type | Required | Description |
 | --- | --- | --- | --- |
-| `ip` | string | 否 | 指定要查询的 IP；省略时使用**服务器出口 IP**，因此部署在中国大陆的服务器结果最准确 |
+| `ip` | string | No | IP to look up; when omitted, uses the **server egress IP**, so servers in mainland China give the most useful results |
 
 ```json
 {
@@ -268,18 +270,18 @@ WGS-84 经纬度 → 中文地址。
 }
 ```
 
-境外 IP（常见于 VPN / 代理出口）会附带 `warning` 字段并且 `inChina: false`。
+IPs outside China (common with VPNs/proxies) include a `warning` and `inChina: false`.
 
-### 3.3 搜索
+### 3.3 Search
 
 #### GET /v1/search
 
-在同一城市内按关键词混合搜索：线路、站点、POI。
+Search lines, stops, and points of interest (POIs) together by keyword within a city.
 
-| 参数 | 类型 | 必填 | 说明 |
+| Parameter | Type | Required | Description |
 | --- | --- | --- | --- |
-| `city_id` | string | 是 | 城市 ID |
-| `keyword` | string | 是 | 关键词，如 `71`、`71路`、`地铁2号线`、`陆家嘴`、`人民广场` |
+| `city_id` | string | Yes | City ID |
+| `keyword` | string | Yes | Search term, e.g. `71`, `71路` (bus 71), `地铁2号线` (metro line 2), `陆家嘴` (Lujiazui), or `人民广场` (People's Square) |
 
 ```json
 {
@@ -325,32 +327,32 @@ WGS-84 经纬度 → 中文地址。
 }
 ```
 
-要点：
+Key points:
 
-- 同一条线路的上下行被折叠进 `directions[]`，顶层 `lineId/direction/startSn/endSn` 为下行（direction=0）兼容字段。
-- `isSubway: true` 的线路 ID 不支持 `/v1/lines/detail`（返回 `empty: true`），请改用 `/v1/stops/detail` 或 `/v1/transit/plan`。
-- `stations[].lat/lng` 为 WGS-84，`pois[].lat/lng` 为 GCJ-02。
+- Both directions of a line are grouped in `directions[]`. Top-level `lineId/direction/startSn/endSn` are compatibility fields for direction 0.
+- Lines with `isSubway: true` are not supported by `/v1/lines/detail` (returns `empty: true`); use `/v1/stops/detail` or `/v1/transit/plan`.
+- `stations[].lat/lng` use WGS-84; `pois[].lat/lng` use GCJ-02.
 
 #### GET /v1/search/more
 
-分页"查看更多"，与 `/v1/search` 同参，另加：
+Paginated “show more” results. Accepts the same parameters as `/v1/search`, plus:
 
-| 参数 | 类型 | 默认 | 说明 |
+| Parameter | Type | Default | Description |
 | --- | --- | --- | --- |
-| `type` | `"1" \| "2" \| "3"` | `"1"` | `1` 更多线路、`2` 更多站点、`3` 更多 POI |
+| `type` | `"1" \| "2" \| "3"` | `"1"` | `1` more lines, `2` more stops, `3` more POIs |
 
-### 3.4 站点
+### 3.4 Stops
 
 #### GET /v1/stops/nearby
 
-坐标附近的站点 + 每条线路的实时到站。
+Nearby stops and realtime arrivals for each line.
 
-| 参数 | 类型 | 必填 | 默认 | 说明 |
+| Parameter | Type | Required | Default | Description |
 | --- | --- | --- | --- | --- |
-| `city_id` | string | 是 | | 城市 ID |
-| `lat` | number string | 是 | | WGS-84 纬度 |
-| `lng` | number string | 是 | | WGS-84 经度 |
-| `limit` | integer | 否 | `5` | 返回最近多少个站点，范围 1–20 |
+| `city_id` | string | Yes | | City ID |
+| `lat` | number string | Yes | | WGS-84 latitude |
+| `lng` | number string | Yes | | WGS-84 longitude |
+| `limit` | integer | No | `5` | Number of nearest stops to return, from 1 to 20 |
 
 ```json
 {
@@ -382,20 +384,20 @@ WGS-84 经纬度 → 中文地址。
 }
 ```
 
-- `lines[].targetOrder` + `lines[].targetStationId` + `lineId` 可直接组成 `/v1/lines/realtime` 的请求。
-- 无实时车辆但即将发车时，`preArrivalTime` 为预计发车时间（`HH:MM`）。
+- Use `lines[].targetOrder`, `lines[].targetStationId`, and `lineId` directly to construct a `/v1/lines/realtime` request.
+- If there are no live buses but a departure is imminent, `preArrivalTime` is the estimated departure time (`HH:MM`).
 
 #### GET /v1/stops/detail
 
-某个物理站台经过的全部线路、实时车辆与附近地铁。
+All lines serving a physical stop, live buses, and nearby metro services.
 
-| 参数 | 类型 | 必填 | 说明 |
+| Parameter | Type | Required | Description |
 | --- | --- | --- | --- |
-| `city_id` | string | 是 | 城市 ID |
-| `physical_st_id` | string | 是 | 来自 `/v1/stops/nearby` 或 `/v1/search` |
-| `namesake_st_id` | string | 否 | 来自同一来源，建议携带 |
-| `first_line_id` | string | 否 | 高亮某条线路 |
-| `lat` / `lng` | number string | 否 | 传入后返回 `distance` |
+| `city_id` | string | Yes | City ID |
+| `physical_st_id` | string | Yes | From `/v1/stops/nearby` or `/v1/search` |
+| `namesake_st_id` | string | No | From the same source; recommended |
+| `first_line_id` | string | No | Highlight a particular line |
+| `lat` / `lng` | number string | No | Include to receive `distance` |
 
 ```json
 {
@@ -425,21 +427,21 @@ WGS-84 经纬度 → 中文地址。
 }
 ```
 
-`stations[]` 中出现多项表示该站名对应多个物理站台。
+Multiple `stations[]` entries indicate that the stop name corresponds to several physical platforms.
 
-### 3.5 线路
+### 3.5 Lines
 
 #### GET /v1/lines/detail
 
-线路完整信息：首末班、票价、全部站点、当前在线车辆、反向 lineId。
+Complete line information: first/last departures, fares, all stops, current buses, and the reverse-direction lineId.
 
-> **地铁线路不支持**：会返回 `empty: true` 与 `hint`。地铁请用 `/v1/stops/detail` 或 `/v1/transit/plan`。
+> **Metro lines are not supported**: returns `empty: true` and `hint`. Use `/v1/stops/detail` or `/v1/transit/plan` for metro services.
 
-| 参数 | 类型 | 必填 | 说明 |
+| Parameter | Type | Required | Description |
 | --- | --- | --- | --- |
-| `city_id` | string | 是 | 城市 ID |
-| `line_id` | string | 是 | 线路 ID（来自 `/v1/search`） |
-| `lat` / `lng` | number string | 否 | WGS-84，可选 |
+| `city_id` | string | Yes | City ID |
+| `line_id` | string | Yes | Line ID (from `/v1/search`) |
+| `lat` / `lng` | number string | No | WGS-84; optional |
 
 ```json
 {
@@ -484,13 +486,13 @@ WGS-84 经纬度 → 中文地址。
 
 #### GET /v1/lines/route
 
-线路轨迹坐标，用于地图画线。
+Line geometry coordinates for drawing routes on a map.
 
-| 参数 | 类型 | 默认 | 说明 |
+| Parameter | Type | Required / default | Description |
 | --- | --- | --- | --- |
-| `city_id` | string | 是 | 城市 ID |
-| `line_id` | string | 是 | 线路 ID |
-| `include_shape` | boolean | `false` | `false` 仅返回站点标记（约 25 点）；`true` 返回全部形状点（约 400–500 点） |
+| `city_id` | string | Yes | City ID |
+| `line_id` | string | Yes | Line ID |
+| `include_shape` | boolean | `false` | `false`: stop markers only (about 25 points); `true`: all shape points (about 400–500) |
 
 ```json
 {
@@ -500,19 +502,19 @@ WGS-84 经纬度 → 中文地址。
 }
 ```
 
-> 上游偶尔缺少终点站标记，`stopCount` 可能比 `/v1/lines/detail` 的 `stationsNum` 少 1，画线无碍。
+> The upstream occasionally omits the terminus marker. `stopCount` may be one less than `stationsNum` from `/v1/lines/detail`; route drawing is unaffected.
 
 #### GET /v1/lines/realtime
 
-"我的公交还有多久到站"——查询驶向指定站点的车辆实时信息。
+Query realtime bus information for vehicles heading to a specific stop.
 
-| 参数 | 类型 | 必填 | 说明 |
+| Parameter | Type | Required | Description |
 | --- | --- | --- | --- |
-| `city_id` | string | 是 | 城市 ID |
-| `line_id` | string | 是 | 线路 ID |
-| `target_order` | integer string | 是 | 等待站点在线路上的序号（来自 `line_detail.stations[].order` 或 `stops/nearby.lines[].targetOrder`） |
-| `station_id` | string | 是 | 等待站点的 `sId`（来自 `stops/nearby.lines[].targetStationId` 或 `stations[].sId`） |
-| `lat` / `lng` | number string | 是 | WGS-84；不知道用户位置时可直接使用站点坐标 |
+| `city_id` | string | Yes | City ID |
+| `line_id` | string | Yes | Line ID |
+| `target_order` | integer string | Yes | Waiting stop order on the line (from `line_detail.stations[].order` or `stops/nearby.lines[].targetOrder`) |
+| `station_id` | string | Yes | Waiting stop `sId` (from `stops/nearby.lines[].targetStationId` or `stations[].sId`) |
+| `lat` / `lng` | number string | Yes | WGS-84; use stop coordinates if the user location is unknown |
 
 ```json
 {
@@ -537,18 +539,18 @@ WGS-84 经纬度 → 中文地址。
 }
 ```
 
-> 上游只为**最近一辆**驶向目标站的车辆计算 `eta`，其余车辆 `eta` 为 `null`，这是正常现象。
+> The upstream calculates `eta` only for the **nearest bus** heading to the target stop. `null` for other buses is expected.
 
 #### GET /v1/lines/buses
 
-锚定站点最快到达的一两辆车（"即将到站"场景）。
+The one or two buses expected to reach the target stop first, for an “arriving soon” display.
 
-| 参数 | 类型 | 必填 | 说明 |
+| Parameter | Type | Required | Description |
 | --- | --- | --- | --- |
-| `city_id` | string | 是 | 城市 ID |
-| `line_id` | string | 是 | 线路 ID |
-| `target_order` | integer string | 是 | 等待站点序号 |
-| `station_name` | string | 是 | 等待站点名称（用于展示） |
+| `city_id` | string | Yes | City ID |
+| `line_id` | string | Yes | Line ID |
+| `target_order` | integer string | Yes | Waiting stop order |
+| `station_name` | string | Yes | Waiting stop name (for display) |
 
 ```json
 {
@@ -571,14 +573,14 @@ WGS-84 经纬度 → 中文地址。
 
 #### GET /v1/lines/timetable
 
-线路发车时刻表，仅少数线路有逐班数据（上海多数线路为固定间隔）。
+Line departure timetable. Only a few lines provide individual departure times; most Shanghai lines run at fixed intervals.
 
-| 参数 | 类型 | 必填 | 说明 |
+| Parameter | Type | Required | Description |
 | --- | --- | --- | --- |
-| `city_id` | string | 是 | 城市 ID |
-| `line_id` | string | 是 | 线路 ID |
-| `line_no` | string | 是 | **面向乘客的短名**（`search.lines[].name`，如 `71`），不是内部 `lineNo`（如 `r95817`） |
-| `direction` | `"0" \| "1"` | 是 | 方向 |
+| `city_id` | string | Yes | City ID |
+| `line_id` | string | Yes | Line ID |
+| `line_no` | string | Yes | **Passenger-facing short name** (`search.lines[].name`, e.g. `71`), rather than the internal `lineNo` (e.g. `r95817`) |
+| `direction` | `"0" \| "1"` | Yes | Direction |
 
 ```json
 {
@@ -590,18 +592,18 @@ WGS-84 经纬度 → 中文地址。
 }
 ```
 
-`mode` 取值：`scheduled`（逐班时刻）、`interval`（固定间隔）、`special`、`unknown`。
+`mode` values: `scheduled` (individual departures), `interval` (fixed intervals), `special`, or `unknown`.
 
-> 查询"首末班 / 是否还在运营"请优先用 `/v1/lines/detail`，它的 `firstTime/lastTime` 更可靠。
+> For first/last departures or operating hours, prefer `/v1/lines/detail`; its `firstTime/lastTime` are more reliable.
 
 #### GET /v1/lines/refresh
 
-一次请求批量刷新多个 (线路, 站点) 组合，适合做"收藏线路"看板。
+Refresh multiple (line, stop) pairs in one request, useful for a favorite-lines dashboard.
 
-| 参数 | 类型 | 必填 | 说明 |
+| Parameter | Type | Required | Description |
 | --- | --- | --- | --- |
-| `city_id` | string | 是 | 城市 ID |
-| `line_stn` | string | 是 | 四元组列表：`lineId,stopId,nextId,targetOrder`，多条以 `;` 分隔，`nextId` 可为空。建议不超过 10 条 |
+| `city_id` | string | Yes | City ID |
+| `line_stn` | string | Yes | Tuples `lineId,stopId,nextId,targetOrder`, separated by `;`; `nextId` may be empty. At most 10 tuples are recommended |
 
 ```bash
 curl "http://127.0.0.1:8787/v1/lines/refresh?city_id=034&line_stn=21283603183,021-15232,,2;21283604388,021-8685,,4"
@@ -621,20 +623,20 @@ curl "http://127.0.0.1:8787/v1/lines/refresh?city_id=034&line_stn=21283603183,02
 }
 ```
 
-### 3.6 换乘规划
+### 3.6 Transit planning
 
 #### GET /v1/transit/plan
 
-公交 + 地铁换乘规划，返回多个候选方案。
+Bus and metro journey planning with multiple alternatives.
 
-| 参数 | 类型 | 必填 | 说明 |
+| Parameter | Type | Required | Description |
 | --- | --- | --- | --- |
-| `city_id` | string | 是 | 城市 ID |
-| `origin_name` | string | 是 | 起点名称（展示用） |
-| `origin_lat` / `origin_lng` | number string | 是 | 起点坐标，**GCJ-02** |
-| `dest_name` | string | 是 | 终点名称 |
-| `dest_lat` / `dest_lng` | number string | 是 | 终点坐标，**GCJ-02** |
-| `strategy` | `"0" \| "1" \| "2" \| "3"` | 否 | `0` 推荐（默认，含地铁）、`1` 少换乘、`2` 少步行、`3` 最短时间（**上游常排除地铁方案**） |
+| `city_id` | string | Yes | City ID |
+| `origin_name` | string | Yes | Origin name (for display) |
+| `origin_lat` / `origin_lng` | number string | Yes | Origin coordinates, **GCJ-02** |
+| `dest_name` | string | Yes | Destination name |
+| `dest_lat` / `dest_lng` | number string | Yes | Destination coordinates, **GCJ-02** |
+| `strategy` | `"0" \| "1" \| "2" \| "3"` | No | `0` recommended (default, includes metro), `1` fewer transfers, `2` less walking, `3` shortest time (**upstream often excludes metro alternatives**) |
 
 ```bash
 curl "http://127.0.0.1:8787/v1/transit/plan?city_id=034&origin_name=人民广场&origin_lat=31.233021&origin_lng=121.49073&dest_name=虹桥火车站&dest_lat=31.197&dest_lng=121.327&strategy=0"
@@ -672,18 +674,18 @@ curl "http://127.0.0.1:8787/v1/transit/plan?city_id=034&origin_name=人民广场
 }
 ```
 
-`lineType`：`0` 公交、`1` 地铁；时间单位为秒，距离单位为米。
+`lineType`: `0` bus, `1` metro. Durations are in seconds; distances are in meters.
 
 ---
 
-## 4. 静态数据托管在 GitHub
+## 4. Hosting static data on GitHub
 
-实时接口必须回源上游，但**城市列表这类低频变化的数据**适合静态化：本仓库通过 GitHub 托管
-`data/cities.json`，API 进程默认直接读取该文件，不再每次请求上游。
+Realtime endpoints must query the upstream, but **infrequently changing data such as the city list** can be hosted statically.
+This repository stores `data/cities.json` on GitHub; the API reads it by default instead of calling the upstream on every request.
 
-### 4.1 数据文件
+### 4.1 Data file
 
-`data/cities.json`（由脚本生成，可提交到仓库；`updatedAt` 仅在城市列表内容变化时更新）：
+`data/cities.json` is generated by a script and can be committed. `updatedAt` changes only when the city list content changes:
 
 ```json
 {
@@ -696,67 +698,67 @@ curl "http://127.0.0.1:8787/v1/transit/plan?city_id=034&origin_name=人民广场
 }
 ```
 
-### 4.2 手动同步
+### 4.2 Manual synchronization
 
 ```bash
-npm run sync-data               # 写入 data/cities.json（tsx）
-bun scripts/sync-data.ts        # 或直接用 Bun 运行
-bun scripts/sync-data.ts out.json --force   # 指定输出文件 / 跳过骤减保护
+npm run sync-data               # Write data/cities.json using tsx.
+bun scripts/sync-data.ts        # Or run directly with Bun.
+bun scripts/sync-data.ts out.json --force   # Set output file / bypass the drop safeguard.
 ```
 
-### 4.3 GitHub Actions 自动同步
+### 4.3 Automatic synchronization with GitHub Actions
 
-仓库已包含 `.github/workflows/sync-data.yml`（工作流名 **Sync data**）：
+The repository includes `.github/workflows/sync-data.yml` (workflow name: **Sync data**):
 
-| 触发方式 | 说明 |
+| Trigger | Description |
 | --- | --- |
-| 定时 | 每天 `03:17 UTC`（北京时间 11:17）自动运行 |
-| 手动 | Actions → Sync data → Run workflow；可勾选 `force` 跳过骤减保护 |
-| Push | 修改 `scripts/sync-data.ts`、工作流本身、`package.json` 或 `bun.lock` 时立即运行一次 |
+| Schedule | Daily at `03:17 UTC` (11:17 Beijing time) |
+| Manual | Actions → Sync data → Run workflow; select `force` to bypass the drop safeguard |
+| Push | Runs when `scripts/sync-data.ts`, the workflow, `package.json`, or `bun.lock` changes |
 
-脚本内置的可靠性措施：
+Built-in reliability measures:
 
-- **失败重试**：拉取上游最多重试 3 次（指数退避）
-- **下限保护**：返回城市数少于 50 个直接失败，不覆盖数据集
-- **骤减保护**：新城市数比现有数据集减少超过 40% 时拒绝提交，需手动触发并勾选 `force`
-- **幂等提交**：城市列表内容无变化时不重写文件、不产生提交（不会出现仅时间戳变化的提交）
-- **并发安全**：push 被并发运行拒绝时自动 rebase 重试（最多 3 次）
-- **运行摘要**：每次运行在 Actions 页面输出城市数、热门城市数、是否提交
+- **Retries**: retry upstream fetches up to three times with exponential backoff.
+- **Minimum count**: fail without overwriting the dataset if fewer than 50 cities are returned.
+- **Drop safeguard**: reject updates if the city count falls by more than 40%; run manually with `force` to override.
+- **Idempotent commits**: unchanged city lists do not rewrite the file or create timestamp-only commits.
+- **Concurrency safety**: automatically rebase and retry up to three times if a concurrent push is rejected.
+- **Run summary**: report city count, popular-city count, and whether a commit was created on the Actions page.
 
-工作流使用 Bun（与仓库的 `bun.lock` 一致），首次使用需要在仓库
-**Settings → Actions → General → Workflow permissions** 中选择 **Read and write permissions**，
-否则 `git push` 会被拒绝。
+The workflow uses Bun, matching the repository `bun.lock`. Before the first run, open
+**Settings → Actions → General → Workflow permissions** and choose **Read and write permissions**;
+otherwise `git push` will be rejected.
 
-### 4.4 从 GitHub / CDN 读取数据
+### 4.4 Read data from GitHub or a CDN
 
-部署 API 时可通过 `DATA_BASE_URL` 指定数据集的 HTTP 目录（例如同一个仓库的 raw 地址或 jsDelivr）：
+Set `DATA_BASE_URL` to the HTTP dataset directory, such as this repository's raw URL or jsDelivr:
 
 ```bash
-# GitHub raw（不建议高并发，仅适合小流量）
+# GitHub raw (for low traffic; not recommended for high concurrency)
 DATA_BASE_URL="https://raw.githubusercontent.com/Justintunsday/chelaile-api-server/main/data"
 
-# jsDelivr（有 CDN 缓存，推荐）
+# jsDelivr (recommended; CDN caching)
 DATA_BASE_URL="https://cdn.jsdelivr.net/gh/Justintunsday/chelaile-api-server@main/data"
 ```
 
-API 会请求 `${DATA_BASE_URL}/cities.json`。
+The API requests `${DATA_BASE_URL}/cities.json`.
 
-### 4.5 数据加载优先级
+### 4.5 Data loading priority
 
 ```
-内存缓存（CITIES_CACHE_TTL_MS，默认 6 小时）
-  └─ 1. DATA_BASE_URL（GitHub/CDN，如配置）
-  └─ 2. 本地文件 DATA_DIR/cities.json
-  └─ 3. 回源上游 /wwd/ncitylist（兜底）
+Memory cache (CITIES_CACHE_TTL_MS; six hours by default)
+  └─ 1. DATA_BASE_URL (GitHub/CDN, if configured)
+  └─ 2. Local file DATA_DIR/cities.json
+  └─ 3. Upstream /wwd/ncitylist (fallback)
 ```
 
-`GET /v1/cities?live=true` 始终绕过上述缓存直接回源，并在响应的 `origin` 中返回 `upstream`。
+`GET /v1/cities?live=true` always bypasses these caches and queries the upstream, returning `origin: upstream`.
 
 ---
 
-## 5. 部署
+## 5. Deployment
 
-### 5.1 Node 直接运行
+### 5.1 Run directly with Node
 
 ```bash
 npm ci
@@ -764,7 +766,7 @@ npm run build
 PORT=8787 DATA_BASE_URL="https://cdn.jsdelivr.net/gh/Justintunsday/chelaile-api-server@main/data" npm start
 ```
 
-进程管理建议使用 `systemd` / `pm2` / `docker restart=always`。
+For process management, use `systemd`, `pm2`, or Docker with `restart=always`.
 
 ### 5.2 Docker
 
@@ -776,48 +778,48 @@ docker run -d --name chelaile-api -p 8787:8787 \
   chelaile-api
 ```
 
-镜像内已包含构建产物与 `data/` 数据集。
+The image includes the compiled application and the `data/` dataset.
 
-### 5.3 托管平台（从 GitHub 一键部署）
+### 5.3 Hosted platforms (deploy from GitHub)
 
-> **GitHub Pages / GitHub Actions 不能直接充当 API 服务器。** Pages 只能托管静态文件，
-> 无法执行上游请求、MD5 签名与 AES 解密；Actions 无法暴露常驻公网端口。本仓库用
-> Pages 托管使用文档，用 Actions 定时更新数据集；API 进程需部署到下方平台。
+> **GitHub Pages and GitHub Actions cannot serve this API directly.** Pages hosts static files and cannot
+> make upstream requests, sign with MD5, or decrypt with AES. Actions cannot expose a permanent public port.
+> This repository uses Pages for documentation and Actions for scheduled dataset updates; deploy the API to a platform below.
 
-| 平台 | 部署方式 | 说明 |
+| Platform | Deployment | Notes |
 | --- | --- | --- |
-| **Cloudflare Workers** | `npx wrangler deploy -c worker/wrangler.toml` | 免运维、无冷启动；`worker/` 复用同一套逻辑；需自定义域名（`*.workers.dev` 大陆不可用） |
-| **Vercel** | vercel.com/new 导入本仓库 | 仓库 `vercel.json` 已声明 **Services + container**（构建 Dockerfile 并将全路径转发给服务），无需手动设置 Framework Preset；已实际部署验证 |
-| **Render** | 一键 Blueprint：<https://render.com/deploy?repo=https://github.com/Justintunsday/chelaile-api-server> | 读取仓库 `render.yaml` + Dockerfile；免费套餐需银行卡验证，且 15 分钟无请求休眠 |
-| **Railway** | New Project → Deploy from GitHub repo | 自动读取 `railway.json` 与 Dockerfile |
-| **VPS** | `npm ci && npm run build && npm start` 或 Docker | 完全可控，可用 systemd/pm2 守护 |
-| **GitHub Codespaces（临时）** | Code → Codespaces，`npm ci && npm run build && npm start`，将 8787 端口改为 Public | 仅用于临时测试，会休眠且有免费额度限制 |
+| **Cloudflare Workers** | `npx wrangler deploy -c worker/wrangler.toml` | No server maintenance or cold starts; `worker/` reuses the core logic; a custom domain is needed for mainland China (`*.workers.dev` is unavailable there) |
+| **Vercel** | Import this repository at vercel.com/new | `vercel.json` declares **Services + container**, builds the Dockerfile, and forwards all paths; no manual Framework Preset setting is needed; deployment has been verified |
+| **Render** | Blueprint: <https://render.com/deploy?repo=https://github.com/Justintunsday/chelaile-api-server> | Uses `render.yaml` and Dockerfile; the documented free plan requires card verification and sleeps after 15 minutes of inactivity |
+| **Railway** | New Project → Deploy from GitHub repo | Reads `railway.json` and Dockerfile automatically |
+| **VPS** | `npm ci && npm run build && npm start` or Docker | Full control; manage with systemd/pm2 |
+| **GitHub Codespaces (temporary)** | Code → Codespaces, run `npm ci && npm run build && npm start`, then make port 8787 Public | Temporary testing only; sleeps and has free-usage limits |
 
-#### Cloudflare Workers 部署步骤
+#### Cloudflare Workers deployment steps
 
 ```bash
 npx wrangler login
 npx wrangler deploy -c worker/wrangler.toml
 ```
 
-1. 部署后进入 Cloudflare Dashboard → **Workers & Pages → chelaile-api → Settings → Domains & Routes**，
-   绑定自定义域名（域名需已托管在 Cloudflare）。
-2. 本地开发/测试：`npm run dev:worker`（默认 http://127.0.0.1:8787）。
-3. 可选配置：
-   - `DATA_BASE_URL`、`CORS_ORIGIN`：修改 `worker/wrangler.toml` 的 `[vars]` 后重新部署；
-   - `API_KEY`：`npx wrangler secret put API_KEY -c worker/wrangler.toml`。
-4. 注意事项：
-   - `wrangler.toml` 已开启 `nodejs_compat` 与 `brotli_content_encoding`（缺少 brotli 标志会导致大响应挂起）；
-   - 免费版 CPU 限制 10ms/请求；城市数据缓存与限流按 isolate 隔离，不跨实例共享；
-   - 大陆访问走 Cloudflare 境外节点（香港/美西等），延迟约 50–300ms，自定义域名是必须的。
+1. After deployment, open Cloudflare Dashboard → **Workers & Pages → chelaile-api → Settings → Domains & Routes**,
+   and bind a custom domain already managed by Cloudflare.
+2. Local development/testing: `npm run dev:worker` (default http://127.0.0.1:8787).
+3. Optional configuration:
+   - `DATA_BASE_URL` and `CORS_ORIGIN`: edit `[vars]` in `worker/wrangler.toml` and redeploy;
+   - `API_KEY`: `npx wrangler secret put API_KEY -c worker/wrangler.toml`.
+4. Notes:
+   - `wrangler.toml` enables `nodejs_compat` and `brotli_content_encoding`; without the Brotli flag, large responses may hang.
+   - The original deployment notes specify a free-plan CPU limit of 10 ms per request; city caches and rate limits are per isolate and are not shared between instances.
+   - Mainland traffic goes through overseas Cloudflare locations (such as Hong Kong or the western US), with documented latency of about 50–300 ms; use a custom domain for mainland access.
 
-- **建议部署在中国大陆或就近区域**：`/v1/my-location` 使用服务器出口 IP，且回源 `web.chelaile.net.cn` 时大陆网络更稳定。
-- **Vercel 环境变量**：建议在项目 Production 环境设置 `DATA_BASE_URL=https://cdn.jsdelivr.net/gh/Justintunsday/chelaile-api-server@main/data`，否则 `/v1/cities` 会回源上游。
-- **超时**：上游单次请求超时 15s；Serverless 类平台请确保函数超时 ≥ 20s（Vercel 容器服务不受旧版 `functions.maxDuration` 配置影响，该项目已改用 Services 模式）。
+- **Hosting in or near mainland China** is recommended: `/v1/my-location` uses the server egress IP, and mainland connectivity to `web.chelaile.net.cn` is generally more stable.
+- **Vercel environment variables**: set `DATA_BASE_URL=https://cdn.jsdelivr.net/gh/Justintunsday/chelaile-api-server@main/data` in Production to load the hosted city dataset.
+- **Timeouts**: each upstream request has a 15-second timeout. For serverless deployments, allow at least 20 seconds; the Vercel container service uses Services rather than the legacy `functions.maxDuration` configuration.
 
-### 5.4 反向代理
+### 5.4 Reverse proxy
 
-Nginx 示例：
+Nginx example:
 
 ```nginx
 location / {
@@ -828,81 +830,81 @@ location / {
 }
 ```
 
-透传 `X-Forwarded-For` 可让限流与日志拿到真实客户端 IP。
+Forward `X-Forwarded-For` so rate limiting and logs can use the real client IP.
 
 ---
 
-## 6. 环境变量
+## 6. Environment variables
 
-| 变量 | 默认 | 说明 |
+| Variable | Default | Description |
 | --- | --- | --- |
-| `PORT` | `8787` | 监听端口 |
-| `HOST` | `0.0.0.0` | 监听地址 |
-| `CORS_ORIGIN` | `*` | 允许来源，多个用逗号分隔；`*` 为全部 |
-| `API_KEY` | 未设置 | 设置后 `/v1/*` 需要 `X-API-Key` / Bearer / `?key=` |
-| `RATE_LIMIT_PER_MINUTE` | `0`（关闭） | 每 IP 每分钟请求上限 |
-| `DATA_DIR` | `./data` | 本地数据集目录 |
-| `DATA_BASE_URL` | 未设置 | GitHub / jsDelivr 数据集地址（末尾无斜杠） |
-| `CITIES_CACHE_TTL_MS` | `21600000`（6h） | 城市数据集内存缓存时长；`0` 表示不缓存 |
-| `LOG_REQUESTS` | `true` | 是否打印访问日志 |
+| `PORT` | `8787` | Listening port |
+| `HOST` | `0.0.0.0` | Bind address |
+| `CORS_ORIGIN` | `*` | Allowed origins, comma-separated; `*` allows all |
+| `API_KEY` | Unset | When set, `/v1/*` requires `X-API-Key`, Bearer authentication, or `?key=` |
+| `RATE_LIMIT_PER_MINUTE` | `0` (disabled) | Maximum requests per IP per minute |
+| `DATA_DIR` | `./data` | Local dataset directory |
+| `DATA_BASE_URL` | Unset | GitHub/jsDelivr dataset directory URL, without a trailing slash |
+| `CITIES_CACHE_TTL_MS` | `21600000` (6h) | In-memory city dataset cache duration; `0` disables caching |
+| `LOG_REQUESTS` | `true` | Whether to print access logs |
 
 ---
 
-## 7. 常见问题
+## 7. FAQ
 
-**Q：返回 `502 upstream_error` / `504 upstream_timeout`？**
-上游 `web.chelaile.net.cn` 偶发不稳定。`504` 表示超过 15s 超时；重试通常即可。`502` 表示上游返回了
-异常结构，可带上 `error.message` 反馈。
+**Why do I get `502 upstream_error` or `504 upstream_timeout`?**
+The upstream `web.chelaile.net.cn` can be unstable. `504` means the 15-second timeout was exceeded; retrying usually helps.
+`502` means the upstream returned an unexpected structure. Include `error.message` when reporting the issue.
 
-**Q：`/v1/lines/detail` 返回 `empty: true`？**
-多半是地铁线路（本接口不覆盖地铁）或线路已停运。按响应中的 `hint` 改用 `/v1/stops/detail`
-（地铁线路信息）或 `/v1/transit/plan`（换乘）。
+**Why does `/v1/lines/detail` return `empty: true`?**
+The line is usually a metro line (unsupported by this endpoint) or no longer operating. Follow the response `hint` and use `/v1/stops/detail`
+for metro information or `/v1/transit/plan` for journey planning.
 
-**Q：为什么 `/v1/lines/realtime` 的 `eta` 大多是 `null`？**
-上游只为最近一辆驶向目标站的车辆预测 ETA，其余车辆仍会返回位置、速度、拥挤度。
+**Why are most `eta` values in `/v1/lines/realtime` `null`?**
+Only the nearest bus heading to the target stop gets an ETA prediction. Other buses still include position, speed, and crowding.
 
-**Q：`physicalStId`、`sId`、`targetOrder` 有什么区别？**
-`sId` 是"线路 × 站点"的站点实例 ID，用于实时查询；`physicalStId` 是物理站台 ID，用于站点详情；
-`targetOrder` 是站点在线路上的序号。`/v1/stops/nearby` 与 `/v1/search` 会同时返回这三者。
+**How do `physicalStId`, `sId`, and `targetOrder` differ?**
+`sId` identifies a line/stop instance for realtime queries; `physicalStId` identifies a physical platform for stop details;
+`targetOrder` is the stop order along the line. Find IDs with `/v1/search`, then obtain the stop order from `/v1/stops/nearby` or `/v1/lines/detail`.
 
-**Q：为什么换乘规划要求 GCJ-02，而其他接口要求 WGS-84？**
-这是上游接口的约定。搜索返回的 POI 坐标本身就是 GCJ-02，可直接用于 `/v1/transit/plan`。
+**Why does transit planning require GCJ-02 while other endpoints use WGS-84?**
+This follows the upstream API. Search POI coordinates already use GCJ-02 and can be passed directly to `/v1/transit/plan`.
 
-**Q：`/v1/my-location` 定位不准？**
-IP 定位精度本身就是城市级；VPN/代理会返回出口 IP 所在地。部署在大陆的服务器使用省略 `ip` 的
-调用才会返回调用方（服务器）的位置。
+**Why is `/v1/my-location` inaccurate?**
+IP geolocation is only city-level; VPNs and proxies locate the egress IP. When `ip` is omitted,
+the result locates the server, with mainland-hosted servers giving the most useful results.
 
-**Q：数据可以商用吗？**
-本项目仅对上游公开接口做协议适配，仅供学习研究，请遵守上游服务条款，避免高频抓取与商业使用。
+**Can I use this data commercially?**
+This project adapts public upstream interfaces for learning and research. Follow the upstream terms of service and avoid high-frequency scraping and commercial use.
 
 ---
 
-## 8. 与 MCP 版本的关系
+## 8. MCP compatibility
 
-原 MCP 能力全部保留：同一份代码同时提供 HTTP API 与 MCP stdio 服务，共 15 个工具
-（`bus_list_cities`、`bus_search`、`bus_get_nearby_stops`、`bus_get_line_realtime`、`bus_plan_transit` …）。
+The original MCP capabilities remain available: the same code provides both the HTTP API and an MCP stdio service with 15 tools
+(`bus_list_cities`, `bus_search`, `bus_get_nearby_stops`, `bus_get_line_realtime`, `bus_plan_transit` …).
 
-启动 MCP 服务：
+Start the MCP service:
 
 ```bash
 npm run start:mcp
-# 或
+# Or
 node dist/index.js
 ```
 
-在 Claude Code / Claude Desktop 中仍可注册（命令指向本地构建产物或包名）：
+Register the local build in Claude Code / Claude Desktop (replace the path with your checkout):
 
 ```json
 {
   "mcpServers": {
-    "chelaile": { "command": "npx", "args": ["-y", "chelaile-mcp-server"] }
+    "chelaile": { "command": "node", "args": ["/path/to/chelaile-api-server/dist/index.js"] }
   }
 }
 ```
 
-MCP 工具与 HTTP 端点的对应关系：
+MCP tools and their HTTP equivalents:
 
-| MCP 工具 | HTTP 端点 |
+| MCP tool | HTTP endpoint |
 | --- | --- |
 | `bus_list_cities` | `GET /v1/cities` |
 | `bus_get_city_config` | `GET /v1/cities/config` |

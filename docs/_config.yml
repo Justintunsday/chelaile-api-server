@@ -1,3 +1,4 @@
 title: chelaile-api-server
-description: 车来了实时公交 HTTP API 使用文档
+description: Documentation for the Chelaile realtime transit HTTP API
+lang: en
 theme: jekyll-theme-primer
