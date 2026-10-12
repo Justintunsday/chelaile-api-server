@@ -66,6 +66,63 @@ describe("filterCities", () => {
 });
 
 describe("CityStore", () => {
+  test("oversized remote datasets are cancelled before falling back to upstream", async () => {
+    let cancelled = false;
+    const store = new CityStore({ dataDir: "missing", dataBaseUrl: "https://cdn.example", ttlMs: 1000,
+      fetchImpl: (async () => new Response(new ReadableStream({
+        start(controller) {
+          controller.enqueue(new Uint8Array(17 * 1024 * 1024));
+          setTimeout(() => { try { controller.close(); } catch {} }, 50);
+        },
+        cancel() { cancelled = true; },
+      }))) as typeof fetch,
+      fetchUpstream: async () => ({ cities: CITIES }),
+    });
+    expect((await store.getEntry()).origin).toBe("upstream");
+    expect(cancelled).toBe(true);
+  });
+  test("concurrent cache misses share one remote load and preserve city IDs", async () => {
+    let release!: () => void;
+    const gate = new Promise<void>((resolve) => { release = resolve; });
+    let calls = 0;
+    const store = new CityStore({
+      dataDir: "missing", dataBaseUrl: "https://cdn.example", ttlMs: 60_000,
+      fetchImpl: (async () => { calls++; await gate; return Response.json(DATASET); }) as typeof fetch,
+    });
+    const requests = Array.from({ length: 20 }, () => store.servedCities(false));
+    release();
+    const results = await Promise.all(requests);
+    expect(calls).toBe(1);
+    expect(results.every((result) => result.cities[0].cityId === "034")).toBe(true);
+  });
+
+  test("a failed shared load is cleared so a subsequent request can recover", async () => {
+    let calls = 0;
+    const store = new CityStore({
+      dataDir: "missing", dataBaseUrl: null, ttlMs: 60_000,
+      fetchUpstream: async () => { if (++calls === 1) throw new Error("temporary failure"); return { cities: CITIES }; },
+    });
+    const initial = await Promise.allSettled([store.getEntry(), store.getEntry()]);
+    expect(initial.map((result) => result.status)).toEqual(["rejected", "rejected"]);
+    expect((await store.getEntry()).dataset.cities).toEqual(CITIES);
+    expect(calls).toBe(2);
+  });
+
+  test("live results do not replace the static cache and disabled TTL continues reloading", async () => {
+    let calls = 0;
+    const store = new CityStore({ dataDir: "missing", dataBaseUrl: null, ttlMs: 60_000,
+      fetchUpstream: async () => ({ cities: [{ ...CITIES[0], cityName: `load-${++calls}` }] }),
+    });
+    expect((await store.getEntry()).dataset.cities[0].cityName).toBe("load-1");
+    expect((await store.getEntry({ live: true })).dataset.cities[0].cityName).toBe("load-2");
+    expect((await store.getEntry()).dataset.cities[0].cityName).toBe("load-1");
+    const uncached = new CityStore({ dataDir: "missing", dataBaseUrl: null, ttlMs: 0,
+      fetchUpstream: async () => ({ cities: [{ ...CITIES[0], cityName: `load-${++calls}` }] }),
+    });
+    expect(Object.keys(await uncached.getEntry()).sort()).toEqual(["dataset", "origin"]);
+    await uncached.getEntry();
+    expect(calls).toBe(4);
+  });
   let dir: string;
 
   beforeAll(async () => {

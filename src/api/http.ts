@@ -1,4 +1,5 @@
 import type { IncomingMessage, ServerResponse } from "node:http";
+import { isIP } from "node:net";
 import { ApiError } from "./errors.js";
 
 export interface ResponseHeaders {
@@ -53,16 +54,19 @@ export function queryObject(url: URL): Record<string, string> {
   return out;
 }
 
-export function getClientIp(req: IncomingMessage): string {
+export function getClientIp(req: IncomingMessage, trustedProxyIps: string[] = []): string {
+  const remote = req.socket?.remoteAddress ?? "unknown";
+  const normalize = (ip: string) => ip.startsWith("::ffff:") && isIP(ip.slice(7)) === 4 ? ip.slice(7) : ip;
+  const trusted = new Set(trustedProxyIps.map(normalize));
+  if (!trusted.has(normalize(remote))) return remote;
   const forwarded = req.headers["x-forwarded-for"];
-  if (typeof forwarded === "string" && forwarded.length > 0) {
-    const first = forwarded.split(",")[0]?.trim();
-    if (first) return first;
+  const hops = (Array.isArray(forwarded) ? forwarded.join(",") : forwarded ?? "")
+    .split(",").map((ip) => ip.trim());
+  if (hops.some((ip) => !isIP(ip))) return remote;
+  for (let i = hops.length - 1; i >= 0; i--) {
+    if (!trusted.has(normalize(hops[i]))) return hops[i];
   }
-  if (Array.isArray(forwarded) && forwarded.length > 0) {
-    return forwarded[0].split(",")[0]?.trim() || "unknown";
-  }
-  return req.socket?.remoteAddress ?? "unknown";
+  return hops[0] ?? remote;
 }
 
 export function corsHeaders(origin: string, reqOrigin?: string): ResponseHeaders {

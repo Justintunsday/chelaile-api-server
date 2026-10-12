@@ -1,0 +1,698 @@
+// Bun Snapshot v1, https://bun.sh/docs/test/snapshots
+
+exports[`MCP tools/list preserves every tool name, input schema, defaults and annotations 1`] = `
+[
+  {
+    "annotations": {
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "openWorldHint": true,
+      "readOnlyHint": true,
+    },
+    "inputSchema": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "additionalProperties": false,
+      "properties": {
+        "hot_only": {
+          "default": true,
+          "description": "Default true: return only the upstream-curated 'hot' set (~20 cities). Set false to dump all 480+.",
+          "type": "boolean",
+        },
+        "response_format": {
+          "default": "markdown",
+          "description": "Output format: 'markdown' for human-readable text, 'json' for full structured data",
+          "enum": [
+            "markdown",
+            "json",
+          ],
+          "type": "string",
+        },
+      },
+      "type": "object",
+    },
+    "name": "bus_list_cities",
+  },
+  {
+    "annotations": {
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "openWorldHint": true,
+      "readOnlyHint": true,
+    },
+    "inputSchema": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "additionalProperties": false,
+      "properties": {
+        "city_id": {
+          "description": "City ID, e.g. '034' for Shanghai, '027' for Beijing",
+          "minLength": 1,
+          "type": "string",
+        },
+        "response_format": {
+          "default": "markdown",
+          "description": "Output format: 'markdown' for human-readable text, 'json' for full structured data",
+          "enum": [
+            "markdown",
+            "json",
+          ],
+          "type": "string",
+        },
+      },
+      "required": [
+        "city_id",
+      ],
+      "type": "object",
+    },
+    "name": "bus_get_city_config",
+  },
+  {
+    "annotations": {
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "openWorldHint": true,
+      "readOnlyHint": true,
+    },
+    "inputSchema": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "additionalProperties": false,
+      "properties": {
+        "lat": {
+          "description": "Latitude, WGS-84, e.g. '31.230416'",
+          "pattern": "^-?\\d+(\\.\\d+)?$",
+          "type": "string",
+        },
+        "lng": {
+          "description": "Longitude, WGS-84, e.g. '121.473701'",
+          "pattern": "^-?\\d+(\\.\\d+)?$",
+          "type": "string",
+        },
+        "response_format": {
+          "default": "markdown",
+          "description": "Output format: 'markdown' for human-readable text, 'json' for full structured data",
+          "enum": [
+            "markdown",
+            "json",
+          ],
+          "type": "string",
+        },
+      },
+      "required": [
+        "lat",
+        "lng",
+      ],
+      "type": "object",
+    },
+    "name": "bus_reverse_geocode",
+  },
+  {
+    "annotations": {
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "openWorldHint": true,
+      "readOnlyHint": true,
+    },
+    "inputSchema": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "additionalProperties": false,
+      "properties": {
+        "ip": {
+          "description": "Optional override IP to look up. Omit to use the mcp server's own outbound IP (i.e. the caller's machine).",
+          "type": "string",
+        },
+        "response_format": {
+          "default": "markdown",
+          "description": "Output format: 'markdown' for human-readable text, 'json' for full structured data",
+          "enum": [
+            "markdown",
+            "json",
+          ],
+          "type": "string",
+        },
+      },
+      "type": "object",
+    },
+    "name": "bus_get_my_location",
+  },
+  {
+    "annotations": {
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "openWorldHint": true,
+      "readOnlyHint": true,
+    },
+    "inputSchema": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "additionalProperties": false,
+      "properties": {
+        "city_id": {
+          "description": "City ID, e.g. '034'",
+          "minLength": 1,
+          "type": "string",
+        },
+        "keyword": {
+          "description": "Search keyword. Examples: '71', '71路', '地铁2号线', '陆家嘴', '人民广场'. Plain line numbers like '71' work fine.",
+          "minLength": 1,
+          "type": "string",
+        },
+        "response_format": {
+          "default": "markdown",
+          "description": "Output format: 'markdown' for human-readable text, 'json' for full structured data",
+          "enum": [
+            "markdown",
+            "json",
+          ],
+          "type": "string",
+        },
+      },
+      "required": [
+        "city_id",
+        "keyword",
+      ],
+      "type": "object",
+    },
+    "name": "bus_search",
+  },
+  {
+    "annotations": {
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "openWorldHint": true,
+      "readOnlyHint": true,
+    },
+    "inputSchema": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "additionalProperties": false,
+      "properties": {
+        "city_id": {
+          "description": "City ID, e.g. '034'",
+          "minLength": 1,
+          "type": "string",
+        },
+        "keyword": {
+          "description": "Search keyword. Examples: '71', '71路', '地铁2号线', '陆家嘴', '人民广场'. Plain line numbers like '71' work fine.",
+          "minLength": 1,
+          "type": "string",
+        },
+        "response_format": {
+          "default": "markdown",
+          "description": "Output format: 'markdown' for human-readable text, 'json' for full structured data",
+          "enum": [
+            "markdown",
+            "json",
+          ],
+          "type": "string",
+        },
+        "type": {
+          "default": "1",
+          "description": "Category: '1' more lines, '2' more stations, '3' more POIs",
+          "enum": [
+            "1",
+            "2",
+            "3",
+          ],
+          "type": "string",
+        },
+      },
+      "required": [
+        "city_id",
+        "keyword",
+      ],
+      "type": "object",
+    },
+    "name": "bus_search_more",
+  },
+  {
+    "annotations": {
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "openWorldHint": true,
+      "readOnlyHint": true,
+    },
+    "inputSchema": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "additionalProperties": false,
+      "properties": {
+        "city_id": {
+          "description": "City ID, e.g. '034'",
+          "minLength": 1,
+          "type": "string",
+        },
+        "lat": {
+          "description": "WGS-84 latitude",
+          "pattern": "^-?\\d+(\\.\\d+)?$",
+          "type": "string",
+        },
+        "limit": {
+          "default": 5,
+          "description": "How many of the nearest stops to return. Default 5 — the upstream may return 15+ and most callers only care about the closest few.",
+          "maximum": 20,
+          "minimum": 1,
+          "type": "integer",
+        },
+        "lng": {
+          "description": "WGS-84 longitude",
+          "pattern": "^-?\\d+(\\.\\d+)?$",
+          "type": "string",
+        },
+        "response_format": {
+          "default": "markdown",
+          "description": "Output format: 'markdown' for human-readable text, 'json' for full structured data",
+          "enum": [
+            "markdown",
+            "json",
+          ],
+          "type": "string",
+        },
+      },
+      "required": [
+        "city_id",
+        "lat",
+        "lng",
+      ],
+      "type": "object",
+    },
+    "name": "bus_get_nearby_stops",
+  },
+  {
+    "annotations": {
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "openWorldHint": true,
+      "readOnlyHint": true,
+    },
+    "inputSchema": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "additionalProperties": false,
+      "properties": {
+        "city_id": {
+          "minLength": 1,
+          "type": "string",
+        },
+        "first_line_id": {
+          "description": "Optional hint of a line you want highlighted",
+          "type": "string",
+        },
+        "lat": {
+          "description": "Caller's WGS-84 latitude — used to populate 'distance'",
+          "pattern": "^-?\\d+(\\.\\d+)?$",
+          "type": "string",
+        },
+        "lng": {
+          "description": "Caller's WGS-84 longitude",
+          "pattern": "^-?\\d+(\\.\\d+)?$",
+          "type": "string",
+        },
+        "namesake_st_id": {
+          "description": "namesakeStId of the stop, optional",
+          "type": "string",
+        },
+        "physical_st_id": {
+          "description": "physicalStId of the stop (from bus_get_nearby_stops or bus_search)",
+          "minLength": 1,
+          "type": "string",
+        },
+        "response_format": {
+          "default": "markdown",
+          "description": "Output format: 'markdown' for human-readable text, 'json' for full structured data",
+          "enum": [
+            "markdown",
+            "json",
+          ],
+          "type": "string",
+        },
+      },
+      "required": [
+        "city_id",
+        "physical_st_id",
+      ],
+      "type": "object",
+    },
+    "name": "bus_get_stop_detail",
+  },
+  {
+    "annotations": {
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "openWorldHint": true,
+      "readOnlyHint": true,
+    },
+    "inputSchema": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "additionalProperties": false,
+      "properties": {
+        "city_id": {
+          "minLength": 1,
+          "type": "string",
+        },
+        "lat": {
+          "pattern": "^-?\\d+(\\.\\d+)?$",
+          "type": "string",
+        },
+        "line_id": {
+          "description": "lineId from bus_search.lines / bus_get_nearby_stops.lines",
+          "minLength": 1,
+          "type": "string",
+        },
+        "lng": {
+          "pattern": "^-?\\d+(\\.\\d+)?$",
+          "type": "string",
+        },
+        "response_format": {
+          "default": "markdown",
+          "description": "Output format: 'markdown' for human-readable text, 'json' for full structured data",
+          "enum": [
+            "markdown",
+            "json",
+          ],
+          "type": "string",
+        },
+      },
+      "required": [
+        "city_id",
+        "line_id",
+      ],
+      "type": "object",
+    },
+    "name": "bus_get_line_detail",
+  },
+  {
+    "annotations": {
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "openWorldHint": true,
+      "readOnlyHint": true,
+    },
+    "inputSchema": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "additionalProperties": false,
+      "properties": {
+        "city_id": {
+          "minLength": 1,
+          "type": "string",
+        },
+        "include_shape": {
+          "default": false,
+          "description": "If true, include all polyline shape points (often 400-500 per line). Default false returns only stop-marker points.",
+          "type": "boolean",
+        },
+        "line_id": {
+          "minLength": 1,
+          "type": "string",
+        },
+        "response_format": {
+          "default": "markdown",
+          "description": "Output format: 'markdown' for human-readable text, 'json' for full structured data",
+          "enum": [
+            "markdown",
+            "json",
+          ],
+          "type": "string",
+        },
+      },
+      "required": [
+        "city_id",
+        "line_id",
+      ],
+      "type": "object",
+    },
+    "name": "bus_get_line_route",
+  },
+  {
+    "annotations": {
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "openWorldHint": true,
+      "readOnlyHint": true,
+    },
+    "inputSchema": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "additionalProperties": false,
+      "properties": {
+        "city_id": {
+          "minLength": 1,
+          "type": "string",
+        },
+        "lat": {
+          "description": "WGS-84 latitude. If the user's location is unknown, fall back to the waiting stop's lat (from line_detail.stations[].wgsLat).",
+          "pattern": "^-?\\d+(\\.\\d+)?$",
+          "type": "string",
+        },
+        "line_id": {
+          "minLength": 1,
+          "type": "string",
+        },
+        "lng": {
+          "description": "WGS-84 longitude. Fallback to the stop's wgsLng if unknown.",
+          "pattern": "^-?\\d+(\\.\\d+)?$",
+          "type": "string",
+        },
+        "response_format": {
+          "default": "markdown",
+          "description": "Output format: 'markdown' for human-readable text, 'json' for full structured data",
+          "enum": [
+            "markdown",
+            "json",
+          ],
+          "type": "string",
+        },
+        "station_id": {
+          "description": "sId of the waiting stop",
+          "minLength": 1,
+          "type": "string",
+        },
+        "target_order": {
+          "description": "Order index of the waiting stop on the line. Get it from bus_get_line_detail.stations[].order or bus_get_nearby_stops.stops[].lines[].targetOrder.",
+          "pattern": "^\\d+$",
+          "type": "string",
+        },
+      },
+      "required": [
+        "city_id",
+        "line_id",
+        "target_order",
+        "station_id",
+        "lat",
+        "lng",
+      ],
+      "type": "object",
+    },
+    "name": "bus_get_line_realtime",
+  },
+  {
+    "annotations": {
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "openWorldHint": true,
+      "readOnlyHint": true,
+    },
+    "inputSchema": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "additionalProperties": false,
+      "properties": {
+        "city_id": {
+          "minLength": 1,
+          "type": "string",
+        },
+        "line_id": {
+          "minLength": 1,
+          "type": "string",
+        },
+        "response_format": {
+          "default": "markdown",
+          "description": "Output format: 'markdown' for human-readable text, 'json' for full structured data",
+          "enum": [
+            "markdown",
+            "json",
+          ],
+          "type": "string",
+        },
+        "station_name": {
+          "description": "Display name of the target stop",
+          "minLength": 1,
+          "type": "string",
+        },
+        "target_order": {
+          "pattern": "^\\d+$",
+          "type": "string",
+        },
+      },
+      "required": [
+        "city_id",
+        "line_id",
+        "target_order",
+        "station_name",
+      ],
+      "type": "object",
+    },
+    "name": "bus_list_line_buses",
+  },
+  {
+    "annotations": {
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "openWorldHint": true,
+      "readOnlyHint": true,
+    },
+    "inputSchema": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "additionalProperties": false,
+      "properties": {
+        "city_id": {
+          "minLength": 1,
+          "type": "string",
+        },
+        "direction": {
+          "enum": [
+            "0",
+            "1",
+          ],
+          "type": "string",
+        },
+        "line_id": {
+          "minLength": 1,
+          "type": "string",
+        },
+        "line_no": {
+          "description": "Rider-facing short name (search.lines[].name), e.g. '71'. NOT the internal lineNo like 'r95817'.",
+          "minLength": 1,
+          "type": "string",
+        },
+        "response_format": {
+          "default": "markdown",
+          "description": "Output format: 'markdown' for human-readable text, 'json' for full structured data",
+          "enum": [
+            "markdown",
+            "json",
+          ],
+          "type": "string",
+        },
+      },
+      "required": [
+        "city_id",
+        "line_id",
+        "line_no",
+        "direction",
+      ],
+      "type": "object",
+    },
+    "name": "bus_get_timetable",
+  },
+  {
+    "annotations": {
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "openWorldHint": true,
+      "readOnlyHint": true,
+    },
+    "inputSchema": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "additionalProperties": false,
+      "properties": {
+        "city_id": {
+          "minLength": 1,
+          "type": "string",
+        },
+        "line_stn": {
+          "description": "Quadruple list: lineId,stopId,nextId,targetOrder; separated by ';'. nextId may be empty.",
+          "minLength": 1,
+          "type": "string",
+        },
+        "response_format": {
+          "default": "markdown",
+          "description": "Output format: 'markdown' for human-readable text, 'json' for full structured data",
+          "enum": [
+            "markdown",
+            "json",
+          ],
+          "type": "string",
+        },
+      },
+      "required": [
+        "city_id",
+        "line_stn",
+      ],
+      "type": "object",
+    },
+    "name": "bus_refresh_lines",
+  },
+  {
+    "annotations": {
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "openWorldHint": true,
+      "readOnlyHint": true,
+    },
+    "inputSchema": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "additionalProperties": false,
+      "properties": {
+        "city_id": {
+          "minLength": 1,
+          "type": "string",
+        },
+        "dest_lat": {
+          "description": "Destination latitude in GCJ-02",
+          "pattern": "^-?\\d+(\\.\\d+)?$",
+          "type": "string",
+        },
+        "dest_lng": {
+          "description": "Destination longitude in GCJ-02",
+          "pattern": "^-?\\d+(\\.\\d+)?$",
+          "type": "string",
+        },
+        "dest_name": {
+          "description": "Destination display name",
+          "minLength": 1,
+          "type": "string",
+        },
+        "origin_lat": {
+          "description": "Origin latitude in GCJ-02",
+          "pattern": "^-?\\d+(\\.\\d+)?$",
+          "type": "string",
+        },
+        "origin_lng": {
+          "description": "Origin longitude in GCJ-02",
+          "pattern": "^-?\\d+(\\.\\d+)?$",
+          "type": "string",
+        },
+        "origin_name": {
+          "description": "Origin display name",
+          "minLength": 1,
+          "type": "string",
+        },
+        "response_format": {
+          "default": "markdown",
+          "description": "Output format: 'markdown' for human-readable text, 'json' for full structured data",
+          "enum": [
+            "markdown",
+            "json",
+          ],
+          "type": "string",
+        },
+        "strategy": {
+          "default": "0",
+          "description": "Routing strategy: 0=recommended (default; surfaces metro), 1=fewest transfers, 2=least walking, 3=shortest time among BUS-ONLY candidates (upstream often excludes metro from this strategy — when in doubt, use 0). For most user questions, 0 is the right choice.",
+          "enum": [
+            "0",
+            "1",
+            "2",
+            "3",
+          ],
+          "type": "string",
+        },
+      },
+      "required": [
+        "city_id",
+        "origin_name",
+        "origin_lat",
+        "origin_lng",
+        "dest_name",
+        "dest_lat",
+        "dest_lng",
+      ],
+      "type": "object",
+    },
+    "name": "bus_plan_transit",
+  },
+]
+`;

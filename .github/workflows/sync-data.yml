@@ -12,6 +12,7 @@ on:
         type: boolean
         default: false
   push:
+    branches: [main]
     # Sync immediately whenever the script or its inputs change.
     paths:
       - "scripts/sync-data.ts"

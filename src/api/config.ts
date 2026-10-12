@@ -1,3 +1,5 @@
+import { isIP } from "node:net";
+
 export interface ApiConfig {
   host: string;
   port: number;
@@ -8,6 +10,7 @@ export interface ApiConfig {
   dataBaseUrl: string | null;
   citiesCacheTtlMs: number;
   logRequests: boolean;
+  trustedProxyIps?: string[];
 }
 
 export const DEFAULTS = {
@@ -62,6 +65,11 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env): ApiConfig {
     "CITIES_CACHE_TTL_MS",
   );
   const rawBase = env.DATA_BASE_URL?.trim();
+  const trustedProxyIps = (env.TRUSTED_PROXY_IPS ?? "")
+    .split(",").map((ip) => ip.trim()).filter(Boolean);
+  if (trustedProxyIps.some((ip) => !isIP(ip))) {
+    throw new Error("Invalid TRUSTED_PROXY_IPS: expected comma-separated IP addresses");
+  }
   return {
     host: env.HOST?.trim() || DEFAULTS.HOST,
     port,
@@ -72,5 +80,6 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env): ApiConfig {
     dataBaseUrl: rawBase ? rawBase.replace(/\/+$/, "") : null,
     citiesCacheTtlMs: ttl,
     logRequests: parseBool(env.LOG_REQUESTS, true),
+    trustedProxyIps,
   };
 }

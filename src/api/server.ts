@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-import { timingSafeEqual } from "node:crypto";
+import { matchesApiKey } from "./auth.js";
 import http, { type IncomingMessage } from "node:http";
 import { pathToFileURL } from "node:url";
 import { loadConfig, type ApiConfig } from "./config.js";
@@ -75,13 +75,6 @@ class FixedWindowRateLimiter {
   }
 }
 
-function safeEqual(a: string, b: string): boolean {
-  const bufA = Buffer.from(a);
-  const bufB = Buffer.from(b);
-  if (bufA.length !== bufB.length) return false;
-  return timingSafeEqual(bufA, bufB);
-}
-
 function isAuthorized(
   req: IncomingMessage,
   url: URL,
@@ -89,15 +82,15 @@ function isAuthorized(
 ): boolean {
   const header = req.headers["x-api-key"];
   const headerValue = Array.isArray(header) ? header[0] : header;
-  if (headerValue && safeEqual(headerValue, apiKey)) return true;
+  if (headerValue && matchesApiKey(headerValue, apiKey)) return true;
 
   const auth = req.headers.authorization;
-  if (auth?.startsWith("Bearer ") && safeEqual(auth.slice(7), apiKey)) {
+  if (auth?.startsWith("Bearer ") && matchesApiKey(auth.slice(7), apiKey)) {
     return true;
   }
 
   const queryKey = url.searchParams.get("key");
-  if (queryKey && safeEqual(queryKey, apiKey)) return true;
+  if (queryKey && matchesApiKey(queryKey, apiKey)) return true;
 
   return false;
 }
@@ -167,7 +160,7 @@ export function createApp(options: AppOptions): http.Server {
       }
 
       if (config.rateLimitPerMinute > 0) {
-        const ip = getClientIp(req);
+        const ip = getClientIp(req, config.trustedProxyIps);
         if (!limiter.allow(ip, config.rateLimitPerMinute, started)) {
           throw rateLimited(60);
         }
@@ -187,7 +180,7 @@ export function createApp(options: AppOptions): http.Server {
         method,
         pathname: url.pathname,
         params: match.params,
-        ip: getClientIp(req),
+        ip: getClientIp(req, config.trustedProxyIps),
       };
       await match.handler(ctx);
       status = res.statusCode;
@@ -201,9 +194,8 @@ export function createApp(options: AppOptions): http.Server {
       }
     } finally {
       if (config.logRequests) {
-        const query = url.search ? url.search : "";
         console.log(
-          `${req.method} ${url.pathname}${query} -> ${status} (${now() - started}ms)`,
+          `${req.method} ${url.pathname} -> ${status} (${now() - started}ms)`,
         );
       }
     }
