@@ -3,7 +3,6 @@ import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import {
   BASE_URL,
   DEFAULT_PARAMS,
-  isCloudflareWorker,
   requestRaw,
 } from "../http-client.js";
 import {
@@ -12,6 +11,7 @@ import {
   pickFormat,
   toUpstreamError,
 } from "../format.js";
+import { requestText } from "../upstream-http.js";
 import { REQUEST_TIMEOUT_MS } from "../constants.js";
 import type { ReverseGeoResponse } from "../types.js";
 
@@ -73,45 +73,12 @@ async function fetchIpApi(ip?: string): Promise<IpApiResponse> {
     ? `/json/${encodeURIComponent(ip)}?lang=zh-CN`
     : "/json/?lang=zh-CN";
 
-  if (isCloudflareWorker()) {
-    // ip-api.com's free tier is HTTP-only; Workers can subrequest plain HTTP.
-    const res = await fetch(`http://ip-api.com${path}`, {
-      headers: { Accept: "application/json" },
-      signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS),
-    });
-    return JSON.parse(await res.text()) as IpApiResponse;
-  }
-
-  const http = await import("node:http");
-  return new Promise((resolve, reject) => {
-    const req = http.request(
-      {
-        hostname: "ip-api.com",
-        path,
-        method: "GET",
-        timeout: REQUEST_TIMEOUT_MS,
-        headers: { Accept: "application/json" },
-      },
-      (res) => {
-        const chunks: Buffer[] = [];
-        res.on("data", (c: Buffer) => chunks.push(c));
-        res.on("end", () => {
-          try {
-            resolve(JSON.parse(Buffer.concat(chunks).toString("utf-8")));
-          } catch (e) {
-            reject(e);
-          }
-        });
-      },
-    );
-    req.on("timeout", () => {
-      req.destroy(new Error(`Request timed out after ${REQUEST_TIMEOUT_MS}ms`));
-    });
-    req.on("error", reject);
-    req.end();
+  const body = await requestText(new URL(`http://ip-api.com${path}`), {
+    headers: { Accept: "application/json" },
+    timeoutMs: REQUEST_TIMEOUT_MS,
   });
+  return JSON.parse(body) as IpApiResponse;
 }
-
 export function renderMyLocation(d: LeanIpLocation): string {
   const lines = [
     "# IP-based location (coarse)",
