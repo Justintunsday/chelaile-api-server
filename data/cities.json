@@ -1,7 +1,7 @@
 {
-  "updatedAt": "2026-09-13T23:54:53.403Z",
+  "updatedAt": "2026-10-12T13:41:13.840Z",
   "source": "chelaile:/wwd/ncitylist",
-  "count": 480,
+  "count": 492,
   "cities": [
     {
       "cityId": "027",
@@ -2755,6 +2755,13 @@
       "hot": false
     },
     {
+      "cityId": "504",
+      "cityName": "甘泉",
+      "pinyin": "GanQuan",
+      "supportSubway": false,
+      "hot": false
+    },
+    {
       "cityId": "503",
       "cityName": "通化",
       "pinyin": "TongHua",
@@ -2769,9 +2776,37 @@
       "hot": false
     },
     {
+      "cityId": "496",
+      "cityName": "潜山",
+      "pinyin": "QianShan",
+      "supportSubway": false,
+      "hot": false
+    },
+    {
       "cityId": "507",
       "cityName": "奎屯",
       "pinyin": "KuiTun",
+      "supportSubway": false,
+      "hot": false
+    },
+    {
+      "cityId": "509",
+      "cityName": "扶绥",
+      "pinyin": "FuSui",
+      "supportSubway": false,
+      "hot": false
+    },
+    {
+      "cityId": "508",
+      "cityName": "柳林",
+      "pinyin": "LiuLin",
+      "supportSubway": false,
+      "hot": false
+    },
+    {
+      "cityId": "514",
+      "cityName": "绥德",
+      "pinyin": "SuiDe",
       "supportSubway": false,
       "hot": false
     },
@@ -2790,6 +2825,13 @@
       "hot": false
     },
     {
+      "cityId": "517",
+      "cityName": "辽源",
+      "pinyin": "LiaoYuan",
+      "supportSubway": false,
+      "hot": false
+    },
+    {
       "cityId": "513",
       "cityName": "黄石",
       "pinyin": "HuangShi",
@@ -2797,9 +2839,30 @@
       "hot": false
     },
     {
+      "cityId": "518",
+      "cityName": "六安",
+      "pinyin": "LuAn",
+      "supportSubway": false,
+      "hot": false
+    },
+    {
+      "cityId": "510",
+      "cityName": "灵丘",
+      "pinyin": "LingQiu",
+      "supportSubway": false,
+      "hot": false
+    },
+    {
       "cityId": "512",
       "cityName": "正安",
       "pinyin": "ZhengAn",
+      "supportSubway": false,
+      "hot": false
+    },
+    {
+      "cityId": "520",
+      "cityName": "铜仁",
+      "pinyin": "TongRen",
       "supportSubway": false,
       "hot": false
     },
@@ -2856,6 +2919,13 @@
       "cityId": "529",
       "cityName": "榆林",
       "pinyin": "YuLin",
+      "supportSubway": false,
+      "hot": false
+    },
+    {
+      "cityId": "533",
+      "cityName": "内乡",
+      "pinyin": "NeiXiang",
       "supportSubway": false,
       "hot": false
     },
@@ -3031,6 +3101,13 @@
       "cityId": "11004",
       "cityName": "仁寿",
       "pinyin": "RenShou",
+      "supportSubway": false,
+      "hot": false
+    },
+    {
+      "cityId": "475",
+      "cityName": "绥化",
+      "pinyin": "SuiHua ",
       "supportSubway": false,
       "hot": false
     },
@@ -3232,8 +3309,8 @@
     },
     {
       "cityId": "578",
-      "cityName": "图木舒克",
-      "pinyin": "TuMuShuKe",
+      "cityName": "草湖",
+      "pinyin": "CaoHu",
       "supportSubway": false,
       "hot": false
     },
@@ -3360,6 +3437,13 @@
       "cityId": "608",
       "cityName": "阜新",
       "pinyin": "FuXin",
+      "supportSubway": false,
+      "hot": false
+    },
+    {
+      "cityId": "609",
+      "cityName": "遂宁",
+      "pinyin": "SuiNing",
       "supportSubway": false,
       "hot": false
     }
