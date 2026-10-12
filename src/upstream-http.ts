@@ -1,3 +1,4 @@
+import { Buffer } from "node:buffer";
 import * as zlib from "node:zlib";
 
 // Bound both wire bytes and decoded bytes. No query values or response bodies
@@ -109,7 +110,7 @@ async function nodeGet(url: URL, options: RequestOptions): Promise<string> {
         try {
           if (!res.complete) throw new Error("Upstream response interrupted");
           const body = decompress(Buffer.concat(chunks), res.headers["content-encoding"]);
-          resolve(body.toString("utf8"));
+          resolve(new TextDecoder("utf-8", { ignoreBOM: true, fatal: false }).decode(body));
         } catch (error) { reject(error); }
       });
       res.on("close", () => {

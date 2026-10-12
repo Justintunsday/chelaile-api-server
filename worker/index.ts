@@ -238,12 +238,10 @@ async function loadCities(
           headers: { Accept: "application/json" },
           signal: AbortSignal.timeout(8000),
         });
-        {
-          const dataset = parseCityDataset(JSON.parse(await readResponseText(res)));
-          if (dataset) {
-            cityCache = { dataset, origin: "github", at: Date.now(), source };
-            return { dataset, origin: "github" };
-          }
+        const dataset = parseCityDataset(JSON.parse(await readResponseText(res)));
+        if (dataset) {
+          cityCache = { dataset, origin: "github", at: Date.now(), source };
+          return { dataset, origin: "github" };
         }
       } catch {
         // fall through to the bundled dataset

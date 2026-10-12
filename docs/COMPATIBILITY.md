@@ -26,11 +26,11 @@ transit inputs and upstream flags use GCJ-02. No coordinate conversion is added.
 | search/more | city_id, keyword | type="1" (1/2/3) | same search shape; no-store |
 | stops/nearby | city_id, lat, lng | limit=5 (1..20) | stops; no-store |
 | stops/detail | city_id, physical_st_id | namesake_st_id, first_line_id, lat, lng omitted | stations; no-store |
-| lines/detail | city_id, line_id | lat, lng omitted | line, stations, buses, reverseDirection, empty?/hint?; no-store |
-| lines/route | city_id, line_id | include_shape=false | route/markers and totals; 1d |
-| lines/realtime | city_id, line_id, target_order, station_id, lat, lng | none | line, buses, realData; no-store |
-| lines/buses | city_id, line_id, target_order, station_name | none | buses; no-store |
-| lines/timetable | city_id, line_id, line_no, direction (0/1) | none | mode, timetable, note?; 1h |
+| lines/detail | city_id, line_id | lat, lng omitted | line, stations, buses, reverseDirection, depDesc?, preArrivalTime?, targetOrder?, empty?/hint?; no-store |
+| lines/route | city_id, line_id | include_shape=false | pointCount, stopCount, points; 1d |
+| lines/realtime | city_id, line_id, target_order, station_id, lat, lng | none | line, targetOrder, buses, realData, note; no-store |
+| lines/buses | city_id, line_id, target_order, station_name | none | targetOrder, buses; no-store |
+| lines/timetable | city_id, line_id, line_no, direction (0/1) | none | line, timeTableType, mode, timetable, note?; 1h |
 | lines/refresh | city_id, line_stn | none | lines; no-store |
 | transit/plan | city_id, origin_name, origin_lat, origin_lng, dest_name, dest_lat, dest_lng | strategy="0" (0..3) | origin, destination, distance, plans, warning?; no-store |
 
@@ -77,8 +77,60 @@ AES-256-ECB, salts, parameter order and protocol headers are retained.
 - Worker platform invocation logs / traces and reverse proxies may record raw
   request URLs independently of application logging. Prefer header credentials;
   query-key support is retained for compatibility.
-- No live upstream, production deployment or Docker daemon verification is
-  implied by offline contracts or dry-run builds. CI validates runnable artifacts.
+- No live upstream or production deployment is implied by offline contracts.
+  workerd smoke tests use bundled data. Docker is verified by CI rather than a
+  local daemon. Scheduled departures are passed through when upstream provides
+  them; timetable fixtures do not establish coverage for any particular city/line.
+
+## Changes, operational notes and rollback
+
+- Access logs now record method/path/status/duration, without query strings.
+  Query-key authentication remains supported. Use X-API-Key to also avoid proxy
+  and platform URL logs.
+- Forwarded IPs are ignored by default. Set `TRUSTED_PROXY_IPS` to an explicit
+  comma-separated list of immediate/chain proxy IPs you control; wildcards and
+  non-IP values fail startup. The chain is walked from right to left until the
+  first untrusted address. Proxies must append/overwrite forwarding headers.
+  Existing proxy installations must configure this before re-enabling limits,
+  otherwise clients behind a proxy share that proxy's limit. No automatic trust
+  is inferred from a client header.
+- Upstream non-2xx (including redirects) fail with the existing 502 code; no
+  body or URL is placed in the transport error. Worker no longer follows
+  redirects. Node retains 15s and Worker 20s/two-attempt settings for Chelaile;
+  IP geolocation retains 15s/one attempt. Node timeout now bounds total request
+  time as well as idle time. Wire and decoded bodies are capped at 16 MiB;
+  unusually large legitimate payloads will fail and need a separately reviewed
+  limit adjustment. No evidence was used to guess a different upstream protocol.
+- Cacheable Node city loads share a pending promise, cleared after either
+  result. TTL <=0 and live=true retain fresh-load behavior. Worker shares only
+  completed plain data, scoped to the normalized source URL, with TTL starting
+  at completion. Pending Worker I/O is deliberately not shared across requests:
+  [Cloudflare request ownership](https://developers.cloudflare.com/workers/reference/how-workers-works/)
+  makes a process-wide pending promise inappropriate. Rate-limit state remains
+  process-local and can grow with active IP count; distributed quotas and a
+  maximum-key policy are deferred to avoid inventing new rejection behavior.
+- Pure dataset parsing and fixed-size SHA-256/timing-safe key comparison are
+  shared. Bus domain logic and all upstream crypto remain intact. Existing
+  Node/Worker CORS and HEAD-on-error differences are not normalized.
+- `bun.lock` is regenerated from the repository's already committed npm lock,
+  including the existing Wrangler dependency. `package-lock.json` and dependency
+  ranges are unchanged; this reconciles the pre-existing version divergence
+  between the two package managers. Frozen install is checked in CI. Node
+  development tools use Node 22, while compiled production artifacts are tested
+  on 18/20/22/24 and Bun. The existing Docker recipe is built and smoke-tested.
+- CI uses pinned action commits, read-only permissions, offline unit/contract
+  tests, compile/type checks, Worker dry-run, workerd/stdio/HTTP runtime smoke
+  checks and Docker checks. Live E2E remains opt-in. The pre-existing sync-data
+  push trigger is restricted to main so feature branch pushes cannot create
+  unsolicited dataset commits; daily/manual sync behavior remains intact.
+
+Commits are separable by baseline, security boundary, transport, cache and CI.
+Before merge, closing the PR rolls back all proposed changes. After merge,
+revert the PR (or the individual fix commits in reverse order), rebuild from
+the matching lockfile and redeploy the previous artifact. No data migrations,
+binding migrations or new secrets are required. Removing TRUSTED_PROXY_IPS
+restores socket-only trust; do not restore unconditional forwarded-header trust
+as a temporary workaround.
 
 ## Security review scope
 
