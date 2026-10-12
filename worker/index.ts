@@ -1,6 +1,9 @@
 // Cloudflare Workers entrypoint.
 // Reuses the same domain logic as the Node API (src/tools/* fetch + reshape)
 // with a fetch-based transport and bundled/remote city dataset.
+import { filterCities, parseCityDataset, type CityDataset } from "../src/api/city-dataset.js";
+import { matchesApiKey } from "../src/api/auth.js";
+import { readResponseText } from "../src/upstream-http.js";
 import bundledCities from "../data/cities.json";
 import { ENDPOINT_INDEX } from "../src/api/handlers.js";
 import {
@@ -51,12 +54,6 @@ export interface Env {
   DATA_BASE_URL?: string;
   API_KEY?: string;
   CORS_ORIGIN?: string;
-}
-
-interface CityDataset {
-  updatedAt: string;
-  source: string;
-  cities: LeanCity[];
 }
 
 interface Ctx {
@@ -141,10 +138,12 @@ function corsFor(configured: string, origin: string | null): CorsResult {
 }
 
 function isAuthorized(request: Request, url: URL, apiKey: string): boolean {
-  if (request.headers.get("x-api-key") === apiKey) return true;
+  const header = request.headers.get("x-api-key");
+  if (header && matchesApiKey(header, apiKey)) return true;
   const auth = request.headers.get("authorization");
-  if (auth?.startsWith("Bearer ") && auth.slice(7) === apiKey) return true;
-  return url.searchParams.get("key") === apiKey;
+  if (auth?.startsWith("Bearer ") && matchesApiKey(auth.slice(7), apiKey)) return true;
+  const key = url.searchParams.get("key");
+  return key !== null && matchesApiKey(key, apiKey);
 }
 
 // ---------- docs proxy ----------
@@ -219,47 +218,17 @@ async function handleDocs(request: Request, url: URL): Promise<Response> {
 
 // ---------- city dataset (remote → bundled → upstream) ----------
 
-let cityCache: { dataset: CityDataset; origin: string; at: number } | null =
+let cityCache: { dataset: CityDataset; origin: string; at: number; source: string } | null =
   null;
-
-function parseDataset(raw: unknown): CityDataset | null {
-  if (raw == null || typeof raw !== "object") return null;
-  const obj = raw as Record<string, unknown>;
-  if (!Array.isArray(obj.cities) || obj.cities.length === 0) return null;
-  const cities: LeanCity[] = [];
-  for (const item of obj.cities) {
-    if (item == null || typeof item !== "object") continue;
-    const c = item as Record<string, unknown>;
-    const cityId = typeof c.cityId === "string" ? c.cityId : "";
-    const cityName = typeof c.cityName === "string" ? c.cityName : "";
-    if (!cityId || !cityName) continue;
-    cities.push({
-      cityId,
-      cityName,
-      ...(typeof c.pinyin === "string" && c.pinyin ? { pinyin: c.pinyin } : {}),
-      supportSubway: c.supportSubway === true,
-      hot: c.hot === true,
-    });
-  }
-  if (cities.length === 0) return null;
-  return {
-    updatedAt:
-      typeof obj.updatedAt === "string" && obj.updatedAt
-        ? obj.updatedAt
-        : new Date(0).toISOString(),
-    source:
-      typeof obj.source === "string" && obj.source ? obj.source : "unknown",
-    cities,
-  };
-}
 
 async function loadCities(
   env: Env,
   live: boolean,
 ): Promise<{ dataset: CityDataset; origin: string }> {
+  const source = env.DATA_BASE_URL?.replace(/\/+$/, "") ?? "";
   if (!live) {
     const now = Date.now();
-    if (cityCache && now - cityCache.at < CITY_CACHE_TTL_MS) {
+    if (cityCache && cityCache.source === source && now - cityCache.at < CITY_CACHE_TTL_MS) {
       return { dataset: cityCache.dataset, origin: cityCache.origin };
     }
     if (env.DATA_BASE_URL) {
@@ -269,10 +238,10 @@ async function loadCities(
           headers: { Accept: "application/json" },
           signal: AbortSignal.timeout(8000),
         });
-        if (res.ok) {
-          const dataset = parseDataset(await res.json());
+        {
+          const dataset = parseCityDataset(JSON.parse(await readResponseText(res)));
           if (dataset) {
-            cityCache = { dataset, origin: "github", at: now };
+            cityCache = { dataset, origin: "github", at: Date.now(), source };
             return { dataset, origin: "github" };
           }
         }
@@ -280,9 +249,9 @@ async function loadCities(
         // fall through to the bundled dataset
       }
     }
-    const bundled = parseDataset(bundledCities);
+    const bundled = parseCityDataset(bundledCities);
     if (bundled) {
-      cityCache = { dataset: bundled, origin: "file", at: now };
+      cityCache = { dataset: bundled, origin: "file", at: Date.now(), source };
       return { dataset: bundled, origin: "file" };
     }
   }
@@ -292,7 +261,7 @@ async function loadCities(
     source: "chelaile:/wwd/ncitylist",
     cities,
   };
-  if (!live) cityCache = { dataset, origin: "upstream", at: Date.now() };
+  if (!live) cityCache = { dataset, origin: "upstream", at: Date.now(), source };
   return { dataset, origin: "upstream" };
 }
 
@@ -328,9 +297,7 @@ async function health(): Promise<Response> {
 async function listCities({ url, env }: Ctx): Promise<Response> {
   const q = parseParams(citiesQuery, Object.fromEntries(url.searchParams));
   const { dataset, origin } = await loadCities(env, q.live);
-  const cities = q.hot_only
-    ? dataset.cities.filter((c) => c.hot)
-    : dataset.cities;
+  const cities = filterCities(dataset.cities, q.hot_only);
   return json(
     200,
     {
