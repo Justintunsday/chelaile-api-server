@@ -81,6 +81,17 @@ test("Worker rejects HTTP errors without exposing bodies or retrying status resp
   });
 });
 
+test("a failed body cancellation cannot mask an upstream HTTP status or trigger a retry", async () => {
+  let calls = 0;
+  await inWorker((async () => {
+    calls++;
+    return new Response(new ReadableStream({ cancel() { throw new Error("cleanup failed"); } }), { status: 503 });
+  }) as typeof fetch, async () => {
+    await expect(requestRaw("https://upstream.example", {})).rejects.toThrow(/HTTP 503/);
+    expect(calls).toBe(1);
+  });
+});
+
 test("Worker bounds decoded upstream bodies and cancels oversized streams", async () => {
   let cancelled = false;
   await inWorker((async () => new Response(new ReadableStream({

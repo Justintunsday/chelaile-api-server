@@ -23,7 +23,7 @@ export function isCloudflareWorker(): boolean {
 
 export async function readResponseText(res: Response): Promise<string> {
   if (!res.ok) {
-    await res.body?.cancel();
+    try { await res.body?.cancel(); } catch { /* Preserve the HTTP failure. */ }
     throw new UpstreamResponseError(`Upstream HTTP ${res.status}`);
   }
   if (!res.body) return "";
@@ -36,7 +36,7 @@ export async function readResponseText(res: Response): Promise<string> {
       if (done) break;
       size += value.byteLength;
       if (size > MAX_UPSTREAM_BODY_BYTES) {
-        await reader.cancel();
+        try { await reader.cancel(); } catch { /* Preserve the size failure. */ }
         throw new UpstreamResponseError("Upstream response too large");
       }
       chunks.push(value);
