@@ -89,13 +89,20 @@ export function rateLimited(retryAfterSeconds: number): ApiError {
 // 504, everything else that bubbled up from the upstream API becomes 502.
 export function toApiError(error: unknown): ApiError {
   if (error instanceof ApiError) return error;
-  const message = error instanceof Error ? error.message : String(error);
-  if (/timed out|timeout|ETIMEDOUT|ESOCKETTIMEDOUT/i.test(message)) {
+  let message = "Upstream request failed.";
+  let name = "";
+  try {
+    message = error instanceof Error ? error.message : String(error);
+    name = error instanceof Error ? error.name : "";
+  } catch {
+    // Even a non-Error throwable with a broken toString must produce JSON.
+  }
+  if (name === "TimeoutError" || /timed out|timeout|ETIMEDOUT|ESOCKETTIMEDOUT/i.test(message)) {
     return new ApiError(504, "upstream_timeout", message, {
       hint: "The upstream chelaile service is slow; retry the request.",
     });
   }
-  if (/aborted|AbortError/i.test(message)) {
+  if (name === "AbortError" || /aborted|AbortError/i.test(message)) {
     return new ApiError(504, "upstream_timeout", "Upstream request aborted.");
   }
   return new ApiError(502, "upstream_error", message, {

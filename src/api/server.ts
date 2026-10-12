@@ -167,7 +167,7 @@ export function createApp(options: AppOptions): http.Server {
       }
 
       if (config.rateLimitPerMinute > 0) {
-        const ip = getClientIp(req);
+        const ip = getClientIp(req, config.trustedProxyIps);
         if (!limiter.allow(ip, config.rateLimitPerMinute, started)) {
           throw rateLimited(60);
         }
@@ -187,7 +187,7 @@ export function createApp(options: AppOptions): http.Server {
         method,
         pathname: url.pathname,
         params: match.params,
-        ip: getClientIp(req),
+        ip: getClientIp(req, config.trustedProxyIps),
       };
       await match.handler(ctx);
       status = res.statusCode;
@@ -201,9 +201,8 @@ export function createApp(options: AppOptions): http.Server {
       }
     } finally {
       if (config.logRequests) {
-        const query = url.search ? url.search : "";
         console.log(
-          `${req.method} ${url.pathname}${query} -> ${status} (${now() - started}ms)`,
+          `${req.method} ${url.pathname} -> ${status} (${now() - started}ms)`,
         );
       }
     }

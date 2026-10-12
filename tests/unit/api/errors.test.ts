@@ -57,6 +57,15 @@ describe("error factories", () => {
 });
 
 describe("toApiError", () => {
+  test("recognizes native abort/timeout names even with opaque messages", () => {
+    expect(toApiError(new DOMException("operation ended", "TimeoutError")).code).toBe("upstream_timeout");
+    expect(toApiError(new DOMException("operation ended", "AbortError")).status).toBe(504);
+  });
+
+  test("unprintable thrown objects cannot break the error boundary", () => {
+    const thrown = { toString() { throw new Error("conversion failed"); } };
+    expect(toApiError(thrown).code).toBe("upstream_error");
+  });
   test("passes ApiError through unchanged", () => {
     const original = new ApiError(400, "invalid_params", "nope");
     expect(toApiError(original)).toBe(original);

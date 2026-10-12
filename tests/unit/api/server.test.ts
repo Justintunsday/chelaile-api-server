@@ -1,4 +1,4 @@
-import { afterAll, beforeAll, describe, expect, test } from "bun:test";
+import { afterAll, beforeAll, describe, expect, spyOn, test } from "bun:test";
 import type { Server } from "node:http";
 import { loadConfig } from "../../../src/api/config.js";
 import { CityStore } from "../../../src/api/data.js";
@@ -240,4 +240,33 @@ describe("rate limiting", () => {
     expect(res.status).toBe(429);
     expect(res.headers.get("retry-after")).toBe("60");
   });
+});
+
+test("query credentials never appear in successful or rejected request logs", async () => {
+  const log = spyOn(console, "log").mockImplementation(() => {});
+  const server = createApp({ config: { ...loadConfig({}), apiKey: "secret-value" } });
+  try {
+    const base = await listen(server);
+    expect((await fetch(`${base}/v1/health?key=secret-value&key=other-secret`)).status).toBe(200);
+    expect((await fetch(`${base}/v1/health?%6bey=rejected-secret`)).status).toBe(401);
+    const output = log.mock.calls.flat().join("\n");
+    expect(output).toContain("GET /v1/health");
+    expect(output).not.toContain("secret");
+  } finally {
+    await close(server);
+    log.mockRestore();
+  }
+});
+
+test("rotating untrusted forwarding headers cannot evade a socket IP limit", async () => {
+  const server = createApp({ config: { ...loadConfig({}), logRequests: false, rateLimitPerMinute: 1 } });
+  try {
+    const base = await listen(server);
+    expect((await fetch(`${base}/v1/health`, { headers: { "x-forwarded-for": "1.2.3.4" } })).status).toBe(200);
+    const response = await fetch(`${base}/v1/health`, { headers: { "x-forwarded-for": "5.6.7.8" } });
+    expect(response.status).toBe(429);
+    expect((await response.json() as { error: { code: string } }).error.code).toBe("rate_limited");
+  } finally {
+    await close(server);
+  }
 });
