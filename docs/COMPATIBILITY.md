@@ -113,7 +113,9 @@ AES-256-ECB, salts, parameter order and protocol headers are retained.
   shared. Bus domain logic and all upstream crypto remain intact. Existing
   Node/Worker CORS and HEAD-on-error differences are not normalized.
 - `bun.lock` is regenerated from the repository's already committed npm lock,
-  including the existing Wrangler dependency. `package-lock.json` and dependency
+  including the existing Wrangler dependency. The v1 lock format is retained
+  using Bun 1.2.23 so the existing Docker image can read it; frozen installation
+  is verified with both Bun 1.2.23 and 1.4.2. `package-lock.json` and dependency
   ranges are unchanged; this reconciles the pre-existing version divergence
   between the two package managers. Frozen install is checked in CI. Node
   development tools use Node 22, while compiled production artifacts are tested
