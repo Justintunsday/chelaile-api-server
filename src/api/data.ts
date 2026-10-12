@@ -107,7 +107,10 @@ export class CityStore {
 
     // Only cacheable Node loads share I/O. live=true and disabled TTL retain
     // their original fresh-load behavior.
-    if (this.options.ttlMs <= 0) return this.loadEntry();
+    if (this.options.ttlMs <= 0) {
+      const entry = await this.loadEntry();
+      return { dataset: entry.dataset, origin: entry.origin };
+    }
     if (!this.pending) this.pending = this.loadEntry();
     const pending = this.pending;
     let entry: CacheEntry;

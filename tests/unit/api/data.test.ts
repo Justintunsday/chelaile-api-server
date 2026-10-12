@@ -119,7 +119,7 @@ describe("CityStore", () => {
     const uncached = new CityStore({ dataDir: "missing", dataBaseUrl: null, ttlMs: 0,
       fetchUpstream: async () => ({ cities: [{ ...CITIES[0], cityName: `load-${++calls}` }] }),
     });
-    await uncached.getEntry();
+    expect(Object.keys(await uncached.getEntry()).sort()).toEqual(["dataset", "origin"]);
     await uncached.getEntry();
     expect(calls).toBe(4);
   });
