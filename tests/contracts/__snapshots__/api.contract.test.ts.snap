@@ -16,7 +16,7 @@ exports[`/v1/cities preserves GET payload, defaults, ordered upstream params and
       "hotOnly": true,
       "origin": "upstream",
       "total": 1,
-      "updatedAt": "2026-10-12T13:11:57.326Z",
+      "updatedAt": "<iso-time>",
     },
     "cache": "no-store",
     "requests": [
@@ -52,7 +52,7 @@ exports[`/v1/cities preserves GET payload, defaults, ordered upstream params and
       "hotOnly": true,
       "origin": "upstream",
       "total": 1,
-      "updatedAt": "2026-10-12T13:11:57.328Z",
+      "updatedAt": "<iso-time>",
     },
     "cache": "no-store",
     "requests": [

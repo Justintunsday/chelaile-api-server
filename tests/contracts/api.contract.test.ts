@@ -64,7 +64,11 @@ for (const [path, query] of cases) {
         ? await fetch(`${base}${path}?${query}`)
         : await worker.fetch(new Request(`https://api.example${path}?${query}`), {});
       expect(response.status).toBe(200);
-      const body = await response.json();
+      const body = await response.json() as Record<string, unknown>;
+      if (path === "/v1/cities") {
+        expect(body.updatedAt).toMatch(/^\d{4}-\d{2}-\d{2}T/);
+        body.updatedAt = "<iso-time>";
+      }
       const requests = sent.map(({ url, headers }) => {
         const parsed = new URL(url);
         // Timestamp and dependent signature vary; preserve key ordering and all other values.
