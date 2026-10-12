@@ -84,5 +84,5 @@ jobs:
         run: |
           docker run -d --name chelaile-ci -p 127.0.0.1:8787:8787 chelaile-ci
           trap 'docker logs chelaile-ci; docker rm -f chelaile-ci' EXIT
-          curl --fail --retry 20 --retry-connrefused --retry-delay 1 http://127.0.0.1:8787/v1/health
+          curl --fail --max-time 5 --retry 20 --retry-all-errors --retry-delay 1 http://127.0.0.1:8787/v1/health
           curl --fail 'http://127.0.0.1:8787/v1/cities?hot_only=false' | python3 -c 'import json,sys; data=json.load(sys.stdin); assert data["origin"]=="file"; assert any(c["cityId"]=="034" for c in data["cities"])'
