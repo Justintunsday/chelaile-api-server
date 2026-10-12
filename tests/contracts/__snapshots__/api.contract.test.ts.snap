@@ -1,0 +1,1559 @@
+// Bun Snapshot v1, https://bun.sh/docs/test/snapshots
+
+exports[`/v1/cities preserves GET payload, defaults, ordered upstream params and fingerprint 1`] = `
+[
+  {
+    "body": {
+      "cities": [
+        {
+          "cityId": "034",
+          "cityName": "上海",
+          "hot": true,
+          "supportSubway": true,
+        },
+      ],
+      "count": 1,
+      "hotOnly": true,
+      "origin": "upstream",
+      "total": 1,
+      "updatedAt": "2026-10-12T13:11:57.326Z",
+    },
+    "cache": "no-store",
+    "requests": [
+      {
+        "headers": {
+          "Accept": "*/*",
+          "Accept-Encoding": "gzip, deflate, br",
+          "Accept-Language": "zh-CN,zh;q=0.9",
+          "Content-Type": "text",
+          "Referer": "https://servicewechat.com/wx71d589ea01ce3321/814/page-frame.html",
+          "Sec-Fetch-Dest": "empty",
+          "Sec-Fetch-Mode": "cors",
+          "Sec-Fetch-Site": "cross-site",
+          "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/132.0.0.0 Safari/537.36 MicroMessenger/7.0.20.1781(0x6700143B) NetType/WIFI MiniProgramEnv/Windows WindowsWechat/WMPF WindowsWechat(0x63090a13) UnifiedPCWindowsWechat(0xf254160a) XWEB/18055",
+          "xweb_xhr": "1",
+        },
+        "url": "https://web.chelaile.net.cn/wwd/ncitylist?s=h5&wxs=wx_app&sign=1&h5RealData=1&v=3.11.28&src=weixinapp_cx&ctm_mp=mp_wx&vc=2&favoriteGray=1&gpstype=wgs&geo_type=wgs&scene=1256",
+      },
+    ],
+    "runtime": "node",
+  },
+  {
+    "body": {
+      "cities": [
+        {
+          "cityId": "034",
+          "cityName": "上海",
+          "hot": true,
+          "supportSubway": true,
+        },
+      ],
+      "count": 1,
+      "hotOnly": true,
+      "origin": "upstream",
+      "total": 1,
+      "updatedAt": "2026-10-12T13:11:57.328Z",
+    },
+    "cache": "no-store",
+    "requests": [
+      {
+        "headers": {
+          "Accept": "*/*",
+          "Accept-Encoding": "gzip, deflate, br",
+          "Accept-Language": "zh-CN,zh;q=0.9",
+          "Content-Type": "text",
+          "Referer": "https://servicewechat.com/wx71d589ea01ce3321/814/page-frame.html",
+          "Sec-Fetch-Dest": "empty",
+          "Sec-Fetch-Mode": "cors",
+          "Sec-Fetch-Site": "cross-site",
+          "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/132.0.0.0 Safari/537.36 MicroMessenger/7.0.20.1781(0x6700143B) NetType/WIFI MiniProgramEnv/Windows WindowsWechat/WMPF WindowsWechat(0x63090a13) UnifiedPCWindowsWechat(0xf254160a) XWEB/18055",
+          "xweb_xhr": "1",
+        },
+        "url": "https://web.chelaile.net.cn/wwd/ncitylist?s=h5&wxs=wx_app&sign=1&h5RealData=1&v=3.11.28&src=weixinapp_cx&ctm_mp=mp_wx&vc=2&favoriteGray=1&gpstype=wgs&geo_type=wgs&scene=1256",
+      },
+    ],
+    "runtime": "worker",
+  },
+]
+`;
+
+exports[`/v1/cities/config preserves GET payload, defaults, ordered upstream params and fingerprint 1`] = `
+[
+  {
+    "body": {},
+    "cache": "public, max-age=600",
+    "requests": [
+      {
+        "headers": {
+          "Accept": "*/*",
+          "Accept-Encoding": "gzip, deflate, br",
+          "Accept-Language": "zh-CN,zh;q=0.9",
+          "Content-Type": "text",
+          "Referer": "https://servicewechat.com/wx71d589ea01ce3321/814/page-frame.html",
+          "Sec-Fetch-Dest": "empty",
+          "Sec-Fetch-Mode": "cors",
+          "Sec-Fetch-Site": "cross-site",
+          "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/132.0.0.0 Safari/537.36 MicroMessenger/7.0.20.1781(0x6700143B) NetType/WIFI MiniProgramEnv/Windows WindowsWechat/WMPF WindowsWechat(0x63090a13) UnifiedPCWindowsWechat(0xf254160a) XWEB/18055",
+          "xweb_xhr": "1",
+        },
+        "url": "https://web.chelaile.net.cn/api/bus/cityMaxInterval.action?s=h5&wxs=wx_app&sign=1&h5RealData=1&v=3.11.28&src=weixinapp_cx&ctm_mp=mp_wx&vc=2&favoriteGray=1&gpstype=wgs&geo_type=wgs&scene=1256&cityId=034&localCityId=034&cryptoSign=7128ab6f426dc34cc9b3dd67f77ec247",
+      },
+    ],
+    "runtime": "node",
+  },
+  {
+    "body": {},
+    "cache": "public, max-age=600",
+    "requests": [
+      {
+        "headers": {
+          "Accept": "*/*",
+          "Accept-Encoding": "gzip, deflate, br",
+          "Accept-Language": "zh-CN,zh;q=0.9",
+          "Content-Type": "text",
+          "Referer": "https://servicewechat.com/wx71d589ea01ce3321/814/page-frame.html",
+          "Sec-Fetch-Dest": "empty",
+          "Sec-Fetch-Mode": "cors",
+          "Sec-Fetch-Site": "cross-site",
+          "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/132.0.0.0 Safari/537.36 MicroMessenger/7.0.20.1781(0x6700143B) NetType/WIFI MiniProgramEnv/Windows WindowsWechat/WMPF WindowsWechat(0x63090a13) UnifiedPCWindowsWechat(0xf254160a) XWEB/18055",
+          "xweb_xhr": "1",
+        },
+        "url": "https://web.chelaile.net.cn/api/bus/cityMaxInterval.action?s=h5&wxs=wx_app&sign=1&h5RealData=1&v=3.11.28&src=weixinapp_cx&ctm_mp=mp_wx&vc=2&favoriteGray=1&gpstype=wgs&geo_type=wgs&scene=1256&cityId=034&localCityId=034&cryptoSign=7128ab6f426dc34cc9b3dd67f77ec247",
+      },
+    ],
+    "runtime": "worker",
+  },
+]
+`;
+
+exports[`/v1/reverse-geocode preserves GET payload, defaults, ordered upstream params and fingerprint 1`] = `
+[
+  {
+    "body": {
+      "adcode": "",
+      "city": "上海",
+      "citycode": "",
+      "district": "",
+      "formatted": "上海",
+      "province": "上海",
+      "township": "",
+    },
+    "cache": "public, max-age=86400",
+    "requests": [
+      {
+        "headers": {
+          "Accept": "*/*",
+          "Accept-Encoding": "gzip, deflate, br",
+          "Accept-Language": "zh-CN,zh;q=0.9",
+          "Content-Type": "text",
+          "Referer": "https://servicewechat.com/wx71d589ea01ce3321/814/page-frame.html",
+          "Sec-Fetch-Dest": "empty",
+          "Sec-Fetch-Mode": "cors",
+          "Sec-Fetch-Site": "cross-site",
+          "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/132.0.0.0 Safari/537.36 MicroMessenger/7.0.20.1781(0x6700143B) NetType/WIFI MiniProgramEnv/Windows WindowsWechat/WMPF WindowsWechat(0x63090a13) UnifiedPCWindowsWechat(0xf254160a) XWEB/18055",
+          "xweb_xhr": "1",
+        },
+        "url": "https://web.chelaile.net.cn/api/transfer/transit!getLocationByGps.action?s=h5&wxs=wx_app&sign=1&h5RealData=1&v=3.11.28&src=weixinapp_cx&ctm_mp=mp_wx&vc=2&favoriteGray=1&gpstype=wgs&geo_type=wgs&scene=1256&lat=31.230416&lng=121.473701&geo_lat=31.230416&geo_lng=121.473701&gpsType=wgs&cryptoSign=7e69a5e1dba0452d92e3913ddcce0f9a",
+      },
+    ],
+    "runtime": "node",
+  },
+  {
+    "body": {
+      "adcode": "",
+      "city": "上海",
+      "citycode": "",
+      "district": "",
+      "formatted": "上海",
+      "province": "上海",
+      "township": "",
+    },
+    "cache": "public, max-age=86400",
+    "requests": [
+      {
+        "headers": {
+          "Accept": "*/*",
+          "Accept-Encoding": "gzip, deflate, br",
+          "Accept-Language": "zh-CN,zh;q=0.9",
+          "Content-Type": "text",
+          "Referer": "https://servicewechat.com/wx71d589ea01ce3321/814/page-frame.html",
+          "Sec-Fetch-Dest": "empty",
+          "Sec-Fetch-Mode": "cors",
+          "Sec-Fetch-Site": "cross-site",
+          "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/132.0.0.0 Safari/537.36 MicroMessenger/7.0.20.1781(0x6700143B) NetType/WIFI MiniProgramEnv/Windows WindowsWechat/WMPF WindowsWechat(0x63090a13) UnifiedPCWindowsWechat(0xf254160a) XWEB/18055",
+          "xweb_xhr": "1",
+        },
+        "url": "https://web.chelaile.net.cn/api/transfer/transit!getLocationByGps.action?s=h5&wxs=wx_app&sign=1&h5RealData=1&v=3.11.28&src=weixinapp_cx&ctm_mp=mp_wx&vc=2&favoriteGray=1&gpstype=wgs&geo_type=wgs&scene=1256&lat=31.230416&lng=121.473701&geo_lat=31.230416&geo_lng=121.473701&gpsType=wgs&cryptoSign=7e69a5e1dba0452d92e3913ddcce0f9a",
+      },
+    ],
+    "runtime": "worker",
+  },
+]
+`;
+
+exports[`/v1/my-location preserves GET payload, defaults, ordered upstream params and fingerprint 1`] = `
+[
+  {
+    "body": {
+      "city": "上海",
+      "country": "中国",
+      "gpsType": "wgs",
+      "inChina": true,
+      "ip": "1.2.3.4",
+      "isp": "fixture",
+      "lat": 31.23,
+      "lng": 121.47,
+      "precision": "city-level (~10 km); not suitable for stop-level queries",
+      "region": "上海",
+    },
+    "cache": "private, no-store",
+    "requests": [
+      {
+        "headers": {
+          "Accept": "application/json",
+        },
+        "url": "http://ip-api.com/json/1.2.3.4?lang=zh-CN",
+      },
+    ],
+    "runtime": "node",
+  },
+  {
+    "body": {
+      "city": "上海",
+      "country": "中国",
+      "gpsType": "wgs",
+      "inChina": true,
+      "ip": "1.2.3.4",
+      "isp": "fixture",
+      "lat": 31.23,
+      "lng": 121.47,
+      "precision": "city-level (~10 km); not suitable for stop-level queries",
+      "region": "上海",
+    },
+    "cache": "no-store",
+    "requests": [
+      {
+        "headers": {
+          "Accept": "application/json",
+        },
+        "url": "http://ip-api.com/json/1.2.3.4?lang=zh-CN",
+      },
+    ],
+    "runtime": "worker",
+  },
+]
+`;
+
+exports[`/v1/search preserves GET payload, defaults, ordered upstream params and fingerprint 1`] = `
+[
+  {
+    "body": {
+      "highlightKey": "",
+      "lines": [],
+      "pois": [],
+      "stations": [],
+    },
+    "cache": "no-store",
+    "requests": [
+      {
+        "headers": {
+          "Accept": "*/*",
+          "Accept-Encoding": "gzip, deflate, br",
+          "Accept-Language": "zh-CN,zh;q=0.9",
+          "Content-Type": "text",
+          "Referer": "https://servicewechat.com/wx71d589ea01ce3321/814/page-frame.html",
+          "Sec-Fetch-Dest": "empty",
+          "Sec-Fetch-Mode": "cors",
+          "Sec-Fetch-Site": "cross-site",
+          "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/132.0.0.0 Safari/537.36 MicroMessenger/7.0.20.1781(0x6700143B) NetType/WIFI MiniProgramEnv/Windows WindowsWechat/WMPF WindowsWechat(0x63090a13) UnifiedPCWindowsWechat(0xf254160a) XWEB/18055",
+          "xweb_xhr": "1",
+        },
+        "url": "https://web.chelaile.net.cn/api/bus/query!nSearch.action?s=h5&wxs=wx_app&sign=1&h5RealData=1&v=3.11.28&src=weixinapp_cx&ctm_mp=mp_wx&vc=2&favoriteGray=1&gpstype=wgs&geo_type=wgs&scene=1256&cityId=034&localCityId=034&key=%E5%85%AC%E4%BA%A4&supportPhyStn=true&cryptoSign=dfc3b037a53863e4750b0f096d92e9f3",
+      },
+    ],
+    "runtime": "node",
+  },
+  {
+    "body": {
+      "highlightKey": "",
+      "lines": [],
+      "pois": [],
+      "stations": [],
+    },
+    "cache": "no-store",
+    "requests": [
+      {
+        "headers": {
+          "Accept": "*/*",
+          "Accept-Encoding": "gzip, deflate, br",
+          "Accept-Language": "zh-CN,zh;q=0.9",
+          "Content-Type": "text",
+          "Referer": "https://servicewechat.com/wx71d589ea01ce3321/814/page-frame.html",
+          "Sec-Fetch-Dest": "empty",
+          "Sec-Fetch-Mode": "cors",
+          "Sec-Fetch-Site": "cross-site",
+          "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/132.0.0.0 Safari/537.36 MicroMessenger/7.0.20.1781(0x6700143B) NetType/WIFI MiniProgramEnv/Windows WindowsWechat/WMPF WindowsWechat(0x63090a13) UnifiedPCWindowsWechat(0xf254160a) XWEB/18055",
+          "xweb_xhr": "1",
+        },
+        "url": "https://web.chelaile.net.cn/api/bus/query!nSearch.action?s=h5&wxs=wx_app&sign=1&h5RealData=1&v=3.11.28&src=weixinapp_cx&ctm_mp=mp_wx&vc=2&favoriteGray=1&gpstype=wgs&geo_type=wgs&scene=1256&cityId=034&localCityId=034&key=%E5%85%AC%E4%BA%A4&supportPhyStn=true&cryptoSign=dfc3b037a53863e4750b0f096d92e9f3",
+      },
+    ],
+    "runtime": "worker",
+  },
+]
+`;
+
+exports[`/v1/search/more preserves GET payload, defaults, ordered upstream params and fingerprint 1`] = `
+[
+  {
+    "body": {
+      "highlightKey": "",
+      "lines": [],
+      "pois": [],
+      "stations": [],
+    },
+    "cache": "no-store",
+    "requests": [
+      {
+        "headers": {
+          "Accept": "*/*",
+          "Accept-Encoding": "gzip, deflate, br",
+          "Accept-Language": "zh-CN,zh;q=0.9",
+          "Content-Type": "text",
+          "Referer": "https://servicewechat.com/wx71d589ea01ce3321/814/page-frame.html",
+          "Sec-Fetch-Dest": "empty",
+          "Sec-Fetch-Mode": "cors",
+          "Sec-Fetch-Site": "cross-site",
+          "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/132.0.0.0 Safari/537.36 MicroMessenger/7.0.20.1781(0x6700143B) NetType/WIFI MiniProgramEnv/Windows WindowsWechat/WMPF WindowsWechat(0x63090a13) UnifiedPCWindowsWechat(0xf254160a) XWEB/18055",
+          "xweb_xhr": "1",
+        },
+        "url": "https://web.chelaile.net.cn/api/bus/query!searchMore.action?s=h5&wxs=wx_app&sign=1&h5RealData=1&v=3.11.28&src=weixinapp_cx&ctm_mp=mp_wx&vc=2&favoriteGray=1&gpstype=wgs&geo_type=wgs&scene=1256&cityId=034&localCityId=034&key=%E5%85%AC%E4%BA%A4&type=1&supportPhyStn=true&cryptoSign=e6d3ae26b550a9c80a37f609dca69ecf",
+      },
+    ],
+    "runtime": "node",
+  },
+  {
+    "body": {
+      "highlightKey": "",
+      "lines": [],
+      "pois": [],
+      "stations": [],
+    },
+    "cache": "no-store",
+    "requests": [
+      {
+        "headers": {
+          "Accept": "*/*",
+          "Accept-Encoding": "gzip, deflate, br",
+          "Accept-Language": "zh-CN,zh;q=0.9",
+          "Content-Type": "text",
+          "Referer": "https://servicewechat.com/wx71d589ea01ce3321/814/page-frame.html",
+          "Sec-Fetch-Dest": "empty",
+          "Sec-Fetch-Mode": "cors",
+          "Sec-Fetch-Site": "cross-site",
+          "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/132.0.0.0 Safari/537.36 MicroMessenger/7.0.20.1781(0x6700143B) NetType/WIFI MiniProgramEnv/Windows WindowsWechat/WMPF WindowsWechat(0x63090a13) UnifiedPCWindowsWechat(0xf254160a) XWEB/18055",
+          "xweb_xhr": "1",
+        },
+        "url": "https://web.chelaile.net.cn/api/bus/query!searchMore.action?s=h5&wxs=wx_app&sign=1&h5RealData=1&v=3.11.28&src=weixinapp_cx&ctm_mp=mp_wx&vc=2&favoriteGray=1&gpstype=wgs&geo_type=wgs&scene=1256&cityId=034&localCityId=034&key=%E5%85%AC%E4%BA%A4&type=1&supportPhyStn=true&cryptoSign=e6d3ae26b550a9c80a37f609dca69ecf",
+      },
+    ],
+    "runtime": "worker",
+  },
+]
+`;
+
+exports[`/v1/stops/nearby preserves GET payload, defaults, ordered upstream params and fingerprint 1`] = `
+[
+  {
+    "body": {
+      "stops": [],
+    },
+    "cache": "no-store",
+    "requests": [
+      {
+        "headers": {
+          "Accept": "*/*",
+          "Accept-Encoding": "gzip, deflate, br",
+          "Accept-Language": "zh-CN,zh;q=0.9",
+          "Content-Type": "text",
+          "Referer": "https://servicewechat.com/wx71d589ea01ce3321/814/page-frame.html",
+          "Sec-Fetch-Dest": "empty",
+          "Sec-Fetch-Mode": "cors",
+          "Sec-Fetch-Site": "cross-site",
+          "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/132.0.0.0 Safari/537.36 MicroMessenger/7.0.20.1781(0x6700143B) NetType/WIFI MiniProgramEnv/Windows WindowsWechat/WMPF WindowsWechat(0x63090a13) UnifiedPCWindowsWechat(0xf254160a) XWEB/18055",
+          "xweb_xhr": "1",
+        },
+        "url": "https://web.chelaile.net.cn/api/bus/stop!encryptedHomePage.action?s=h5&wxs=wx_app&sign=1&h5RealData=1&v=3.11.28&src=weixinapp_cx&ctm_mp=mp_wx&vc=2&favoriteGray=1&gpstype=wgs&geo_type=wgs&scene=1256&cityId=034&localCityId=undefined&lat=31.230416&lng=121.473701&geo_lat=31.230416&geo_lng=121.473701&type=5&permission=0&cryptoSign=f7b42753eaca937ac82a726fef733d71",
+      },
+    ],
+    "runtime": "node",
+  },
+  {
+    "body": {
+      "stops": [],
+    },
+    "cache": "no-store",
+    "requests": [
+      {
+        "headers": {
+          "Accept": "*/*",
+          "Accept-Encoding": "gzip, deflate, br",
+          "Accept-Language": "zh-CN,zh;q=0.9",
+          "Content-Type": "text",
+          "Referer": "https://servicewechat.com/wx71d589ea01ce3321/814/page-frame.html",
+          "Sec-Fetch-Dest": "empty",
+          "Sec-Fetch-Mode": "cors",
+          "Sec-Fetch-Site": "cross-site",
+          "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/132.0.0.0 Safari/537.36 MicroMessenger/7.0.20.1781(0x6700143B) NetType/WIFI MiniProgramEnv/Windows WindowsWechat/WMPF WindowsWechat(0x63090a13) UnifiedPCWindowsWechat(0xf254160a) XWEB/18055",
+          "xweb_xhr": "1",
+        },
+        "url": "https://web.chelaile.net.cn/api/bus/stop!encryptedHomePage.action?s=h5&wxs=wx_app&sign=1&h5RealData=1&v=3.11.28&src=weixinapp_cx&ctm_mp=mp_wx&vc=2&favoriteGray=1&gpstype=wgs&geo_type=wgs&scene=1256&cityId=034&localCityId=undefined&lat=31.230416&lng=121.473701&geo_lat=31.230416&geo_lng=121.473701&type=5&permission=0&cryptoSign=f7b42753eaca937ac82a726fef733d71",
+      },
+    ],
+    "runtime": "worker",
+  },
+]
+`;
+
+exports[`/v1/stops/detail preserves GET payload, defaults, ordered upstream params and fingerprint 1`] = `
+[
+  {
+    "body": {
+      "stations": [],
+    },
+    "cache": "no-store",
+    "requests": [
+      {
+        "headers": {
+          "Accept": "*/*",
+          "Accept-Encoding": "gzip, deflate, br",
+          "Accept-Language": "zh-CN,zh;q=0.9",
+          "Content-Type": "text",
+          "Referer": "https://servicewechat.com/wx71d589ea01ce3321/814/page-frame.html",
+          "Sec-Fetch-Dest": "empty",
+          "Sec-Fetch-Mode": "cors",
+          "Sec-Fetch-Site": "cross-site",
+          "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/132.0.0.0 Safari/537.36 MicroMessenger/7.0.20.1781(0x6700143B) NetType/WIFI MiniProgramEnv/Windows WindowsWechat/WMPF WindowsWechat(0x63090a13) UnifiedPCWindowsWechat(0xf254160a) XWEB/18055",
+          "xweb_xhr": "1",
+        },
+        "url": "https://web.chelaile.net.cn/api/bus/stop!encryptedPhyStnDetail.action?s=h5&wxs=wx_app&sign=1&h5RealData=1&v=3.11.28&src=weixinapp_cx&ctm_mp=mp_wx&vc=2&favoriteGray=1&gpstype=wgs&geo_type=wgs&scene=1256&cityId=034&localCityId=034&physicalStId=001&namesakeStId=&firstLineId=&stationId=&lat=&lng=&geo_lat=&geo_lng=&actionState=1&permission=0&cryptoSign=2718182a2057154688d6de6af82bdd25",
+      },
+    ],
+    "runtime": "node",
+  },
+  {
+    "body": {
+      "stations": [],
+    },
+    "cache": "no-store",
+    "requests": [
+      {
+        "headers": {
+          "Accept": "*/*",
+          "Accept-Encoding": "gzip, deflate, br",
+          "Accept-Language": "zh-CN,zh;q=0.9",
+          "Content-Type": "text",
+          "Referer": "https://servicewechat.com/wx71d589ea01ce3321/814/page-frame.html",
+          "Sec-Fetch-Dest": "empty",
+          "Sec-Fetch-Mode": "cors",
+          "Sec-Fetch-Site": "cross-site",
+          "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/132.0.0.0 Safari/537.36 MicroMessenger/7.0.20.1781(0x6700143B) NetType/WIFI MiniProgramEnv/Windows WindowsWechat/WMPF WindowsWechat(0x63090a13) UnifiedPCWindowsWechat(0xf254160a) XWEB/18055",
+          "xweb_xhr": "1",
+        },
+        "url": "https://web.chelaile.net.cn/api/bus/stop!encryptedPhyStnDetail.action?s=h5&wxs=wx_app&sign=1&h5RealData=1&v=3.11.28&src=weixinapp_cx&ctm_mp=mp_wx&vc=2&favoriteGray=1&gpstype=wgs&geo_type=wgs&scene=1256&cityId=034&localCityId=034&physicalStId=001&namesakeStId=&firstLineId=&stationId=&lat=&lng=&geo_lat=&geo_lng=&actionState=1&permission=0&cryptoSign=2718182a2057154688d6de6af82bdd25",
+      },
+    ],
+    "runtime": "worker",
+  },
+]
+`;
+
+exports[`/v1/lines/detail preserves GET payload, defaults, ordered upstream params and fingerprint 1`] = `
+[
+  {
+    "body": {
+      "buses": [],
+      "empty": true,
+      "hint": "Upstream returned no data for this lineId. This typically means it is a SUBWAY line (bus_get_line_detail does not cover metro), or the lineId has been retired. For subway first/last times, call bus_get_nearby_stops at a coordinate the metro passes through and read the \`subwayLines[].directions\` of any returned stop with \`isSubway:true\` (stop_detail's \`metros\` only has line names, no schedule). For metro routing, use bus_plan_transit. For buses, re-resolve the lineId via bus_search.",
+      "line": {
+        "direction": 0,
+        "endSn": "",
+        "lineId": "",
+        "lineNo": "",
+        "name": "",
+        "startSn": "",
+      },
+      "reverseDirection": null,
+      "stations": [],
+    },
+    "cache": "no-store",
+    "requests": [
+      {
+        "headers": {
+          "Accept": "*/*",
+          "Accept-Encoding": "gzip, deflate, br",
+          "Accept-Language": "zh-CN,zh;q=0.9",
+          "Content-Type": "text",
+          "Referer": "https://servicewechat.com/wx71d589ea01ce3321/814/page-frame.html",
+          "Sec-Fetch-Dest": "empty",
+          "Sec-Fetch-Mode": "cors",
+          "Sec-Fetch-Site": "cross-site",
+          "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/132.0.0.0 Safari/537.36 MicroMessenger/7.0.20.1781(0x6700143B) NetType/WIFI MiniProgramEnv/Windows WindowsWechat/WMPF WindowsWechat(0x63090a13) UnifiedPCWindowsWechat(0xf254160a) XWEB/18055",
+          "xweb_xhr": "1",
+        },
+        "url": "https://web.chelaile.net.cn/api/bus/line!encryptedLineDetail.action?s=h5&wxs=wx_app&sign=1&h5RealData=1&v=3.11.28&src=weixinapp_cx&ctm_mp=mp_wx&vc=2&favoriteGray=1&gpstype=wgs&geo_type=wgs&scene=1256&cityId=034&localCityId=034&lineId=001&lat=&lng=&geo_lat=&geo_lng=&cryptoSign=1cc1636520655bc0756cee6b0d04ba44",
+      },
+    ],
+    "runtime": "node",
+  },
+  {
+    "body": {
+      "buses": [],
+      "empty": true,
+      "hint": "Upstream returned no data for this lineId. This typically means it is a SUBWAY line (bus_get_line_detail does not cover metro), or the lineId has been retired. For subway first/last times, call bus_get_nearby_stops at a coordinate the metro passes through and read the \`subwayLines[].directions\` of any returned stop with \`isSubway:true\` (stop_detail's \`metros\` only has line names, no schedule). For metro routing, use bus_plan_transit. For buses, re-resolve the lineId via bus_search.",
+      "line": {
+        "direction": 0,
+        "endSn": "",
+        "lineId": "",
+        "lineNo": "",
+        "name": "",
+        "startSn": "",
+      },
+      "reverseDirection": null,
+      "stations": [],
+    },
+    "cache": "no-store",
+    "requests": [
+      {
+        "headers": {
+          "Accept": "*/*",
+          "Accept-Encoding": "gzip, deflate, br",
+          "Accept-Language": "zh-CN,zh;q=0.9",
+          "Content-Type": "text",
+          "Referer": "https://servicewechat.com/wx71d589ea01ce3321/814/page-frame.html",
+          "Sec-Fetch-Dest": "empty",
+          "Sec-Fetch-Mode": "cors",
+          "Sec-Fetch-Site": "cross-site",
+          "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/132.0.0.0 Safari/537.36 MicroMessenger/7.0.20.1781(0x6700143B) NetType/WIFI MiniProgramEnv/Windows WindowsWechat/WMPF WindowsWechat(0x63090a13) UnifiedPCWindowsWechat(0xf254160a) XWEB/18055",
+          "xweb_xhr": "1",
+        },
+        "url": "https://web.chelaile.net.cn/api/bus/line!encryptedLineDetail.action?s=h5&wxs=wx_app&sign=1&h5RealData=1&v=3.11.28&src=weixinapp_cx&ctm_mp=mp_wx&vc=2&favoriteGray=1&gpstype=wgs&geo_type=wgs&scene=1256&cityId=034&localCityId=034&lineId=001&lat=&lng=&geo_lat=&geo_lng=&cryptoSign=1cc1636520655bc0756cee6b0d04ba44",
+      },
+    ],
+    "runtime": "worker",
+  },
+]
+`;
+
+exports[`/v1/lines/route preserves GET payload, defaults, ordered upstream params and fingerprint 1`] = `
+[
+  {
+    "body": {
+      "pointCount": 0,
+      "points": [],
+      "stopCount": 0,
+    },
+    "cache": "public, max-age=86400",
+    "requests": [
+      {
+        "headers": {
+          "Accept": "*/*",
+          "Accept-Encoding": "gzip, deflate, br",
+          "Accept-Language": "zh-CN,zh;q=0.9",
+          "Content-Type": "text",
+          "Referer": "https://servicewechat.com/wx71d589ea01ce3321/814/page-frame.html",
+          "Sec-Fetch-Dest": "empty",
+          "Sec-Fetch-Mode": "cors",
+          "Sec-Fetch-Site": "cross-site",
+          "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/132.0.0.0 Safari/537.36 MicroMessenger/7.0.20.1781(0x6700143B) NetType/WIFI MiniProgramEnv/Windows WindowsWechat/WMPF WindowsWechat(0x63090a13) UnifiedPCWindowsWechat(0xf254160a) XWEB/18055",
+          "xweb_xhr": "1",
+        },
+        "url": "https://web.chelaile.net.cn/api/bus/line!lineRoute.action?s=h5&wxs=wx_app&sign=1&h5RealData=1&v=3.11.28&src=weixinapp_cx&ctm_mp=mp_wx&vc=2&favoriteGray=1&gpstype=wgs&geo_type=wgs&scene=1256&cityId=034&localCityId=034&lineId=001&cryptoSign=4a0d55b8942ed64b6dbe1abc2b75f974",
+      },
+    ],
+    "runtime": "node",
+  },
+  {
+    "body": {
+      "pointCount": 0,
+      "points": [],
+      "stopCount": 0,
+    },
+    "cache": "public, max-age=86400",
+    "requests": [
+      {
+        "headers": {
+          "Accept": "*/*",
+          "Accept-Encoding": "gzip, deflate, br",
+          "Accept-Language": "zh-CN,zh;q=0.9",
+          "Content-Type": "text",
+          "Referer": "https://servicewechat.com/wx71d589ea01ce3321/814/page-frame.html",
+          "Sec-Fetch-Dest": "empty",
+          "Sec-Fetch-Mode": "cors",
+          "Sec-Fetch-Site": "cross-site",
+          "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/132.0.0.0 Safari/537.36 MicroMessenger/7.0.20.1781(0x6700143B) NetType/WIFI MiniProgramEnv/Windows WindowsWechat/WMPF WindowsWechat(0x63090a13) UnifiedPCWindowsWechat(0xf254160a) XWEB/18055",
+          "xweb_xhr": "1",
+        },
+        "url": "https://web.chelaile.net.cn/api/bus/line!lineRoute.action?s=h5&wxs=wx_app&sign=1&h5RealData=1&v=3.11.28&src=weixinapp_cx&ctm_mp=mp_wx&vc=2&favoriteGray=1&gpstype=wgs&geo_type=wgs&scene=1256&cityId=034&localCityId=034&lineId=001&cryptoSign=4a0d55b8942ed64b6dbe1abc2b75f974",
+      },
+    ],
+    "runtime": "worker",
+  },
+]
+`;
+
+exports[`/v1/lines/realtime preserves GET payload, defaults, ordered upstream params and fingerprint 1`] = `
+[
+  {
+    "body": {
+      "buses": [],
+      "line": {
+        "direction": 0,
+        "endSn": "",
+        "lineId": "",
+        "name": "",
+      },
+      "note": "Upstream only predicts an ETA for the nearest bus heading to your stop. Buses farther down the line are still listed (with position) but their \`eta\` is null.",
+      "realData": false,
+      "targetOrder": 0,
+    },
+    "cache": "no-store",
+    "requests": [
+      {
+        "headers": {
+          "Accept": "*/*",
+          "Accept-Encoding": "gzip, deflate, br",
+          "Accept-Language": "zh-CN,zh;q=0.9",
+          "Content-Type": "text",
+          "Referer": "https://servicewechat.com/wx71d589ea01ce3321/814/page-frame.html",
+          "Sec-Fetch-Dest": "empty",
+          "Sec-Fetch-Mode": "cors",
+          "Sec-Fetch-Site": "cross-site",
+          "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/132.0.0.0 Safari/537.36 MicroMessenger/7.0.20.1781(0x6700143B) NetType/WIFI MiniProgramEnv/Windows WindowsWechat/WMPF WindowsWechat(0x63090a13) UnifiedPCWindowsWechat(0xf254160a) XWEB/18055",
+          "xweb_xhr": "1",
+        },
+        "url": "https://web.chelaile.net.cn/api/bus/line!encryptedBusDetail.action?s=h5&wxs=wx_app&sign=1&h5RealData=1&v=3.11.28&src=weixinapp_cx&ctm_mp=mp_wx&vc=2&favoriteGray=1&gpstype=wgs&geo_type=wgs&scene=1256&cshow=busDetail&specail=0&specialType=undefined&cityId=034&localCityId=034&lineId=001&targetOrder=02&specialTargetOrder=02&stationId=003&lat=31.230416&lng=121.473701&geo_lat=31.230416&geo_lng=121.473701&userId=&h5Id=&unionId=&accountId=&secret=&cryptoSign=5fce6ce4d37452bd443e4281fd9fe368",
+      },
+    ],
+    "runtime": "node",
+  },
+  {
+    "body": {
+      "buses": [],
+      "line": {
+        "direction": 0,
+        "endSn": "",
+        "lineId": "",
+        "name": "",
+      },
+      "note": "Upstream only predicts an ETA for the nearest bus heading to your stop. Buses farther down the line are still listed (with position) but their \`eta\` is null.",
+      "realData": false,
+      "targetOrder": 0,
+    },
+    "cache": "no-store",
+    "requests": [
+      {
+        "headers": {
+          "Accept": "*/*",
+          "Accept-Encoding": "gzip, deflate, br",
+          "Accept-Language": "zh-CN,zh;q=0.9",
+          "Content-Type": "text",
+          "Referer": "https://servicewechat.com/wx71d589ea01ce3321/814/page-frame.html",
+          "Sec-Fetch-Dest": "empty",
+          "Sec-Fetch-Mode": "cors",
+          "Sec-Fetch-Site": "cross-site",
+          "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/132.0.0.0 Safari/537.36 MicroMessenger/7.0.20.1781(0x6700143B) NetType/WIFI MiniProgramEnv/Windows WindowsWechat/WMPF WindowsWechat(0x63090a13) UnifiedPCWindowsWechat(0xf254160a) XWEB/18055",
+          "xweb_xhr": "1",
+        },
+        "url": "https://web.chelaile.net.cn/api/bus/line!encryptedBusDetail.action?s=h5&wxs=wx_app&sign=1&h5RealData=1&v=3.11.28&src=weixinapp_cx&ctm_mp=mp_wx&vc=2&favoriteGray=1&gpstype=wgs&geo_type=wgs&scene=1256&cshow=busDetail&specail=0&specialType=undefined&cityId=034&localCityId=034&lineId=001&targetOrder=02&specialTargetOrder=02&stationId=003&lat=31.230416&lng=121.473701&geo_lat=31.230416&geo_lng=121.473701&userId=&h5Id=&unionId=&accountId=&secret=&cryptoSign=5fce6ce4d37452bd443e4281fd9fe368",
+      },
+    ],
+    "runtime": "worker",
+  },
+]
+`;
+
+exports[`/v1/lines/buses preserves GET payload, defaults, ordered upstream params and fingerprint 1`] = `
+[
+  {
+    "body": {
+      "buses": [],
+      "targetOrder": 0,
+    },
+    "cache": "no-store",
+    "requests": [
+      {
+        "headers": {
+          "Accept": "*/*",
+          "Accept-Encoding": "gzip, deflate, br",
+          "Accept-Language": "zh-CN,zh;q=0.9",
+          "Content-Type": "text",
+          "Referer": "https://servicewechat.com/wx71d589ea01ce3321/814/page-frame.html",
+          "Sec-Fetch-Dest": "empty",
+          "Sec-Fetch-Mode": "cors",
+          "Sec-Fetch-Site": "cross-site",
+          "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/132.0.0.0 Safari/537.36 MicroMessenger/7.0.20.1781(0x6700143B) NetType/WIFI MiniProgramEnv/Windows WindowsWechat/WMPF WindowsWechat(0x63090a13) UnifiedPCWindowsWechat(0xf254160a) XWEB/18055",
+          "xweb_xhr": "1",
+        },
+        "url": "https://web.chelaile.net.cn/api/bus/line!busList.action?s=h5&wxs=wx_app&sign=1&h5RealData=1&v=3.11.28&src=weixinapp_cx&ctm_mp=mp_wx&vc=2&favoriteGray=1&gpstype=wgs&geo_type=wgs&scene=1256&cityId=034&localCityId=034&lineId=001&targetOrder=02&stationName=%E4%BA%BA%E6%B0%91%E5%B9%BF%E5%9C%BA&nextStationName=&cryptoSign=ddf59f94ac4479424fe81e336e235744",
+      },
+    ],
+    "runtime": "node",
+  },
+  {
+    "body": {
+      "buses": [],
+      "targetOrder": 0,
+    },
+    "cache": "no-store",
+    "requests": [
+      {
+        "headers": {
+          "Accept": "*/*",
+          "Accept-Encoding": "gzip, deflate, br",
+          "Accept-Language": "zh-CN,zh;q=0.9",
+          "Content-Type": "text",
+          "Referer": "https://servicewechat.com/wx71d589ea01ce3321/814/page-frame.html",
+          "Sec-Fetch-Dest": "empty",
+          "Sec-Fetch-Mode": "cors",
+          "Sec-Fetch-Site": "cross-site",
+          "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/132.0.0.0 Safari/537.36 MicroMessenger/7.0.20.1781(0x6700143B) NetType/WIFI MiniProgramEnv/Windows WindowsWechat/WMPF WindowsWechat(0x63090a13) UnifiedPCWindowsWechat(0xf254160a) XWEB/18055",
+          "xweb_xhr": "1",
+        },
+        "url": "https://web.chelaile.net.cn/api/bus/line!busList.action?s=h5&wxs=wx_app&sign=1&h5RealData=1&v=3.11.28&src=weixinapp_cx&ctm_mp=mp_wx&vc=2&favoriteGray=1&gpstype=wgs&geo_type=wgs&scene=1256&cityId=034&localCityId=034&lineId=001&targetOrder=02&stationName=%E4%BA%BA%E6%B0%91%E5%B9%BF%E5%9C%BA&nextStationName=&cryptoSign=ddf59f94ac4479424fe81e336e235744",
+      },
+    ],
+    "runtime": "worker",
+  },
+]
+`;
+
+exports[`/v1/lines/timetable preserves GET payload, defaults, ordered upstream params and fingerprint 1`] = `
+[
+  {
+    "body": {
+      "line": {
+        "direction": 0,
+        "endSn": "",
+        "lineId": "",
+        "name": "",
+        "startSn": "",
+      },
+      "mode": "unknown",
+      "note": "Timetable type not recognised; fall back to bus_get_line_detail.",
+      "timeTableType": 0,
+      "timetable": null,
+    },
+    "cache": "public, max-age=3600",
+    "requests": [
+      {
+        "headers": {
+          "Accept": "*/*",
+          "Accept-Encoding": "gzip, deflate, br",
+          "Accept-Language": "zh-CN,zh;q=0.9",
+          "Content-Type": "text",
+          "Referer": "https://servicewechat.com/wx71d589ea01ce3321/814/page-frame.html",
+          "Sec-Fetch-Dest": "empty",
+          "Sec-Fetch-Mode": "cors",
+          "Sec-Fetch-Site": "cross-site",
+          "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/132.0.0.0 Safari/537.36 MicroMessenger/7.0.20.1781(0x6700143B) NetType/WIFI MiniProgramEnv/Windows WindowsWechat/WMPF WindowsWechat(0x63090a13) UnifiedPCWindowsWechat(0xf254160a) XWEB/18055",
+          "xweb_xhr": "1",
+        },
+        "url": "https://web.chelaile.net.cn/api/bus/line!preStartTimetableNew.action?s=h5&wxs=wx_app&sign=1&h5RealData=1&v=3.11.28&src=weixinapp_cx&ctm_mp=mp_wx&vc=2&favoriteGray=1&gpstype=wgs&geo_type=wgs&scene=1256&cityId=034&lineId=001&lineNo=01&direction=0&tabType=0&cryptoSign=ca3d24c67aee2f37239c40cc7d8f5dfb",
+      },
+    ],
+    "runtime": "node",
+  },
+  {
+    "body": {
+      "line": {
+        "direction": 0,
+        "endSn": "",
+        "lineId": "",
+        "name": "",
+        "startSn": "",
+      },
+      "mode": "unknown",
+      "note": "Timetable type not recognised; fall back to bus_get_line_detail.",
+      "timeTableType": 0,
+      "timetable": null,
+    },
+    "cache": "public, max-age=3600",
+    "requests": [
+      {
+        "headers": {
+          "Accept": "*/*",
+          "Accept-Encoding": "gzip, deflate, br",
+          "Accept-Language": "zh-CN,zh;q=0.9",
+          "Content-Type": "text",
+          "Referer": "https://servicewechat.com/wx71d589ea01ce3321/814/page-frame.html",
+          "Sec-Fetch-Dest": "empty",
+          "Sec-Fetch-Mode": "cors",
+          "Sec-Fetch-Site": "cross-site",
+          "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/132.0.0.0 Safari/537.36 MicroMessenger/7.0.20.1781(0x6700143B) NetType/WIFI MiniProgramEnv/Windows WindowsWechat/WMPF WindowsWechat(0x63090a13) UnifiedPCWindowsWechat(0xf254160a) XWEB/18055",
+          "xweb_xhr": "1",
+        },
+        "url": "https://web.chelaile.net.cn/api/bus/line!preStartTimetableNew.action?s=h5&wxs=wx_app&sign=1&h5RealData=1&v=3.11.28&src=weixinapp_cx&ctm_mp=mp_wx&vc=2&favoriteGray=1&gpstype=wgs&geo_type=wgs&scene=1256&cityId=034&lineId=001&lineNo=01&direction=0&tabType=0&cryptoSign=ca3d24c67aee2f37239c40cc7d8f5dfb",
+      },
+    ],
+    "runtime": "worker",
+  },
+]
+`;
+
+exports[`/v1/lines/refresh preserves GET payload, defaults, ordered upstream params and fingerprint 1`] = `
+[
+  {
+    "body": {
+      "lines": [],
+    },
+    "cache": "no-store",
+    "requests": [
+      {
+        "headers": {
+          "Accept": "*/*",
+          "Accept-Encoding": "gzip, deflate, br",
+          "Accept-Language": "zh-CN,zh;q=0.9",
+          "Content-Type": "text",
+          "Referer": "https://servicewechat.com/wx71d589ea01ce3321/814/page-frame.html",
+          "Sec-Fetch-Dest": "empty",
+          "Sec-Fetch-Mode": "cors",
+          "Sec-Fetch-Site": "cross-site",
+          "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/132.0.0.0 Safari/537.36 MicroMessenger/7.0.20.1781(0x6700143B) NetType/WIFI MiniProgramEnv/Windows WindowsWechat/WMPF WindowsWechat(0x63090a13) UnifiedPCWindowsWechat(0xf254160a) XWEB/18055",
+          "xweb_xhr": "1",
+        },
+        "url": "https://web.chelaile.net.cn/api/bus/line!encryptedTsfRealInfos.action?s=h5&wxs=wx_app&sign=1&h5RealData=1&v=3.11.28&src=weixinapp_cx&ctm_mp=mp_wx&vc=2&favoriteGray=1&gpstype=wgs&geo_type=wgs&scene=1256&reqSrc=2&cityId=034&localCityId=034&lineStn=001%2C002%2C03%2C004&cryptoSign=e34d9e804e37f31f413ad47dfec0d136",
+      },
+    ],
+    "runtime": "node",
+  },
+  {
+    "body": {
+      "lines": [],
+    },
+    "cache": "no-store",
+    "requests": [
+      {
+        "headers": {
+          "Accept": "*/*",
+          "Accept-Encoding": "gzip, deflate, br",
+          "Accept-Language": "zh-CN,zh;q=0.9",
+          "Content-Type": "text",
+          "Referer": "https://servicewechat.com/wx71d589ea01ce3321/814/page-frame.html",
+          "Sec-Fetch-Dest": "empty",
+          "Sec-Fetch-Mode": "cors",
+          "Sec-Fetch-Site": "cross-site",
+          "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/132.0.0.0 Safari/537.36 MicroMessenger/7.0.20.1781(0x6700143B) NetType/WIFI MiniProgramEnv/Windows WindowsWechat/WMPF WindowsWechat(0x63090a13) UnifiedPCWindowsWechat(0xf254160a) XWEB/18055",
+          "xweb_xhr": "1",
+        },
+        "url": "https://web.chelaile.net.cn/api/bus/line!encryptedTsfRealInfos.action?s=h5&wxs=wx_app&sign=1&h5RealData=1&v=3.11.28&src=weixinapp_cx&ctm_mp=mp_wx&vc=2&favoriteGray=1&gpstype=wgs&geo_type=wgs&scene=1256&reqSrc=2&cityId=034&localCityId=034&lineStn=001%2C002%2C03%2C004&cryptoSign=e34d9e804e37f31f413ad47dfec0d136",
+      },
+    ],
+    "runtime": "worker",
+  },
+]
+`;
+
+exports[`/v1/transit/plan preserves GET payload, defaults, ordered upstream params and fingerprint 1`] = `
+[
+  {
+    "body": {
+      "destination": "",
+      "distance": 0,
+      "origin": "",
+      "plans": [],
+    },
+    "cache": "no-store",
+    "requests": [
+      {
+        "headers": {
+          "Accept": "*/*",
+          "Accept-Encoding": "gzip, deflate, br",
+          "Accept-Language": "zh-CN,zh;q=0.9",
+          "Content-Type": "text",
+          "Referer": "https://servicewechat.com/wx71d589ea01ce3321/814/page-frame.html",
+          "Sec-Fetch-Dest": "empty",
+          "Sec-Fetch-Mode": "cors",
+          "Sec-Fetch-Site": "cross-site",
+          "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/132.0.0.0 Safari/537.36 MicroMessenger/7.0.20.1781(0x6700143B) NetType/WIFI MiniProgramEnv/Windows WindowsWechat/WMPF WindowsWechat(0x63090a13) UnifiedPCWindowsWechat(0xf254160a) XWEB/18055",
+          "xweb_xhr": "1",
+        },
+        "url": "https://web.chelaile.net.cn/api/transfer/transit!integrate.action?s=h5&wxs=wx_app&sign=1&h5RealData=1&v=3.11.28&src=weixinapp_cx&ctm_mp=mp_wx&vc=2&favoriteGray=1&gpstype=gcj&geo_type=gcj&scene=1256&cityId=034&localCityId=034&origin_name=%E8%B5%B7%E7%82%B9&origin_lat=31.232&origin_lng=121.479&dest_name=%E7%BB%88%E7%82%B9&dest_lat=31.24&dest_lng=121.49&strategy=0&isSelectTime=0&departure_time=%3Ctimestamp%3E&cryptoSign=%3Ctimestamp-signature%3E",
+      },
+    ],
+    "runtime": "node",
+  },
+  {
+    "body": {
+      "destination": "",
+      "distance": 0,
+      "origin": "",
+      "plans": [],
+    },
+    "cache": "no-store",
+    "requests": [
+      {
+        "headers": {
+          "Accept": "*/*",
+          "Accept-Encoding": "gzip, deflate, br",
+          "Accept-Language": "zh-CN,zh;q=0.9",
+          "Content-Type": "text",
+          "Referer": "https://servicewechat.com/wx71d589ea01ce3321/814/page-frame.html",
+          "Sec-Fetch-Dest": "empty",
+          "Sec-Fetch-Mode": "cors",
+          "Sec-Fetch-Site": "cross-site",
+          "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/132.0.0.0 Safari/537.36 MicroMessenger/7.0.20.1781(0x6700143B) NetType/WIFI MiniProgramEnv/Windows WindowsWechat/WMPF WindowsWechat(0x63090a13) UnifiedPCWindowsWechat(0xf254160a) XWEB/18055",
+          "xweb_xhr": "1",
+        },
+        "url": "https://web.chelaile.net.cn/api/transfer/transit!integrate.action?s=h5&wxs=wx_app&sign=1&h5RealData=1&v=3.11.28&src=weixinapp_cx&ctm_mp=mp_wx&vc=2&favoriteGray=1&gpstype=gcj&geo_type=gcj&scene=1256&cityId=034&localCityId=034&origin_name=%E8%B5%B7%E7%82%B9&origin_lat=31.232&origin_lng=121.479&dest_name=%E7%BB%88%E7%82%B9&dest_lat=31.24&dest_lng=121.49&strategy=0&isSelectTime=0&departure_time=%3Ctimestamp%3E&cryptoSign=%3Ctimestamp-signature%3E",
+      },
+    ],
+    "runtime": "worker",
+  },
+]
+`;
+
+exports[`index, aliases, HEAD, validation and error codes remain available in both runtimes: node / 1`] = `
+{
+  "description": "Read-only HTTP API for 车来了 (Chelaile) realtime bus, metro and transit data.",
+  "docs": "docs/API.md",
+  "endpoints": [
+    {
+      "description": "Service liveness probe",
+      "method": "GET",
+      "path": "/v1/health",
+    },
+    {
+      "description": "Supported cities (static dataset or upstream)",
+      "method": "GET",
+      "path": "/v1/cities",
+    },
+    {
+      "description": "City refresh interval / display config",
+      "method": "GET",
+      "path": "/v1/cities/config",
+    },
+    {
+      "description": "WGS-84 coordinates → Chinese address",
+      "method": "GET",
+      "path": "/v1/reverse-geocode",
+    },
+    {
+      "description": "Approximate caller location from an IP",
+      "method": "GET",
+      "path": "/v1/my-location",
+    },
+    {
+      "description": "Search lines, stops and POIs by keyword",
+      "method": "GET",
+      "path": "/v1/search",
+    },
+    {
+      "description": "Paginated 'see more' for one search category",
+      "method": "GET",
+      "path": "/v1/search/more",
+    },
+    {
+      "description": "Nearby stops + realtime arrivals",
+      "method": "GET",
+      "path": "/v1/stops/nearby",
+    },
+    {
+      "description": "All lines + buses + metro for a stop",
+      "method": "GET",
+      "path": "/v1/stops/detail",
+    },
+    {
+      "description": "Full line info: stops + live buses",
+      "method": "GET",
+      "path": "/v1/lines/detail",
+    },
+    {
+      "description": "Line polyline coordinates for maps",
+      "method": "GET",
+      "path": "/v1/lines/route",
+    },
+    {
+      "description": "Realtime buses + ETA for (line, stop)",
+      "method": "GET",
+      "path": "/v1/lines/realtime",
+    },
+    {
+      "description": "Nearest approaching bus for a stop",
+      "method": "GET",
+      "path": "/v1/lines/buses",
+    },
+    {
+      "description": "Per-trip schedule (rarely available)",
+      "method": "GET",
+      "path": "/v1/lines/timetable",
+    },
+    {
+      "description": "Batch refresh multiple (line, stop) pairs",
+      "method": "GET",
+      "path": "/v1/lines/refresh",
+    },
+    {
+      "description": "Bus + metro transit route planning",
+      "method": "GET",
+      "path": "/v1/transit/plan",
+    },
+  ],
+  "name": "chelaile-api",
+  "version": "2.0.0",
+}
+`;
+
+exports[`index, aliases, HEAD, validation and error codes remain available in both runtimes: node /v1 1`] = `
+{
+  "description": "Read-only HTTP API for 车来了 (Chelaile) realtime bus, metro and transit data.",
+  "docs": "docs/API.md",
+  "endpoints": [
+    {
+      "description": "Service liveness probe",
+      "method": "GET",
+      "path": "/v1/health",
+    },
+    {
+      "description": "Supported cities (static dataset or upstream)",
+      "method": "GET",
+      "path": "/v1/cities",
+    },
+    {
+      "description": "City refresh interval / display config",
+      "method": "GET",
+      "path": "/v1/cities/config",
+    },
+    {
+      "description": "WGS-84 coordinates → Chinese address",
+      "method": "GET",
+      "path": "/v1/reverse-geocode",
+    },
+    {
+      "description": "Approximate caller location from an IP",
+      "method": "GET",
+      "path": "/v1/my-location",
+    },
+    {
+      "description": "Search lines, stops and POIs by keyword",
+      "method": "GET",
+      "path": "/v1/search",
+    },
+    {
+      "description": "Paginated 'see more' for one search category",
+      "method": "GET",
+      "path": "/v1/search/more",
+    },
+    {
+      "description": "Nearby stops + realtime arrivals",
+      "method": "GET",
+      "path": "/v1/stops/nearby",
+    },
+    {
+      "description": "All lines + buses + metro for a stop",
+      "method": "GET",
+      "path": "/v1/stops/detail",
+    },
+    {
+      "description": "Full line info: stops + live buses",
+      "method": "GET",
+      "path": "/v1/lines/detail",
+    },
+    {
+      "description": "Line polyline coordinates for maps",
+      "method": "GET",
+      "path": "/v1/lines/route",
+    },
+    {
+      "description": "Realtime buses + ETA for (line, stop)",
+      "method": "GET",
+      "path": "/v1/lines/realtime",
+    },
+    {
+      "description": "Nearest approaching bus for a stop",
+      "method": "GET",
+      "path": "/v1/lines/buses",
+    },
+    {
+      "description": "Per-trip schedule (rarely available)",
+      "method": "GET",
+      "path": "/v1/lines/timetable",
+    },
+    {
+      "description": "Batch refresh multiple (line, stop) pairs",
+      "method": "GET",
+      "path": "/v1/lines/refresh",
+    },
+    {
+      "description": "Bus + metro transit route planning",
+      "method": "GET",
+      "path": "/v1/transit/plan",
+    },
+  ],
+  "name": "chelaile-api",
+  "version": "2.0.0",
+}
+`;
+
+exports[`index, aliases, HEAD, validation and error codes remain available in both runtimes: node /v1/ 1`] = `
+{
+  "description": "Read-only HTTP API for 车来了 (Chelaile) realtime bus, metro and transit data.",
+  "docs": "docs/API.md",
+  "endpoints": [
+    {
+      "description": "Service liveness probe",
+      "method": "GET",
+      "path": "/v1/health",
+    },
+    {
+      "description": "Supported cities (static dataset or upstream)",
+      "method": "GET",
+      "path": "/v1/cities",
+    },
+    {
+      "description": "City refresh interval / display config",
+      "method": "GET",
+      "path": "/v1/cities/config",
+    },
+    {
+      "description": "WGS-84 coordinates → Chinese address",
+      "method": "GET",
+      "path": "/v1/reverse-geocode",
+    },
+    {
+      "description": "Approximate caller location from an IP",
+      "method": "GET",
+      "path": "/v1/my-location",
+    },
+    {
+      "description": "Search lines, stops and POIs by keyword",
+      "method": "GET",
+      "path": "/v1/search",
+    },
+    {
+      "description": "Paginated 'see more' for one search category",
+      "method": "GET",
+      "path": "/v1/search/more",
+    },
+    {
+      "description": "Nearby stops + realtime arrivals",
+      "method": "GET",
+      "path": "/v1/stops/nearby",
+    },
+    {
+      "description": "All lines + buses + metro for a stop",
+      "method": "GET",
+      "path": "/v1/stops/detail",
+    },
+    {
+      "description": "Full line info: stops + live buses",
+      "method": "GET",
+      "path": "/v1/lines/detail",
+    },
+    {
+      "description": "Line polyline coordinates for maps",
+      "method": "GET",
+      "path": "/v1/lines/route",
+    },
+    {
+      "description": "Realtime buses + ETA for (line, stop)",
+      "method": "GET",
+      "path": "/v1/lines/realtime",
+    },
+    {
+      "description": "Nearest approaching bus for a stop",
+      "method": "GET",
+      "path": "/v1/lines/buses",
+    },
+    {
+      "description": "Per-trip schedule (rarely available)",
+      "method": "GET",
+      "path": "/v1/lines/timetable",
+    },
+    {
+      "description": "Batch refresh multiple (line, stop) pairs",
+      "method": "GET",
+      "path": "/v1/lines/refresh",
+    },
+    {
+      "description": "Bus + metro transit route planning",
+      "method": "GET",
+      "path": "/v1/transit/plan",
+    },
+  ],
+  "name": "chelaile-api",
+  "version": "2.0.0",
+}
+`;
+
+exports[`index, aliases, HEAD, validation and error codes remain available in both runtimes: node /v1/nope GET 1`] = `
+{
+  "body": {
+    "error": {
+      "code": "not_found",
+      "hint": "See GET / for the endpoint index, or docs/API.md for the full reference.",
+      "message": "No API route matches /v1/nope.",
+    },
+  },
+  "status": 404,
+}
+`;
+
+exports[`index, aliases, HEAD, validation and error codes remain available in both runtimes: node /v1/search GET 1`] = `
+{
+  "body": {
+    "error": {
+      "code": "invalid_params",
+      "details": [
+        {
+          "message": "Required",
+          "param": "city_id",
+        },
+        {
+          "message": "Required",
+          "param": "keyword",
+        },
+      ],
+      "message": "One or more request parameters are invalid.",
+    },
+  },
+  "status": 400,
+}
+`;
+
+exports[`index, aliases, HEAD, validation and error codes remain available in both runtimes: node /v1/health POST 1`] = `
+{
+  "body": {
+    "error": {
+      "code": "method_not_allowed",
+      "hint": "All chelaile API endpoints are read-only and use GET.",
+      "message": "POST is not supported for /v1/health.",
+    },
+  },
+  "status": 405,
+}
+`;
+
+exports[`index, aliases, HEAD, validation and error codes remain available in both runtimes: worker / 1`] = `
+{
+  "description": "Read-only HTTP API for 车来了 (Chelaile) realtime bus, metro and transit data.",
+  "docs": "docs/API.md",
+  "endpoints": [
+    {
+      "description": "Service liveness probe",
+      "method": "GET",
+      "path": "/v1/health",
+    },
+    {
+      "description": "Supported cities (static dataset or upstream)",
+      "method": "GET",
+      "path": "/v1/cities",
+    },
+    {
+      "description": "City refresh interval / display config",
+      "method": "GET",
+      "path": "/v1/cities/config",
+    },
+    {
+      "description": "WGS-84 coordinates → Chinese address",
+      "method": "GET",
+      "path": "/v1/reverse-geocode",
+    },
+    {
+      "description": "Approximate caller location from an IP",
+      "method": "GET",
+      "path": "/v1/my-location",
+    },
+    {
+      "description": "Search lines, stops and POIs by keyword",
+      "method": "GET",
+      "path": "/v1/search",
+    },
+    {
+      "description": "Paginated 'see more' for one search category",
+      "method": "GET",
+      "path": "/v1/search/more",
+    },
+    {
+      "description": "Nearby stops + realtime arrivals",
+      "method": "GET",
+      "path": "/v1/stops/nearby",
+    },
+    {
+      "description": "All lines + buses + metro for a stop",
+      "method": "GET",
+      "path": "/v1/stops/detail",
+    },
+    {
+      "description": "Full line info: stops + live buses",
+      "method": "GET",
+      "path": "/v1/lines/detail",
+    },
+    {
+      "description": "Line polyline coordinates for maps",
+      "method": "GET",
+      "path": "/v1/lines/route",
+    },
+    {
+      "description": "Realtime buses + ETA for (line, stop)",
+      "method": "GET",
+      "path": "/v1/lines/realtime",
+    },
+    {
+      "description": "Nearest approaching bus for a stop",
+      "method": "GET",
+      "path": "/v1/lines/buses",
+    },
+    {
+      "description": "Per-trip schedule (rarely available)",
+      "method": "GET",
+      "path": "/v1/lines/timetable",
+    },
+    {
+      "description": "Batch refresh multiple (line, stop) pairs",
+      "method": "GET",
+      "path": "/v1/lines/refresh",
+    },
+    {
+      "description": "Bus + metro transit route planning",
+      "method": "GET",
+      "path": "/v1/transit/plan",
+    },
+  ],
+  "name": "chelaile-api",
+  "runtime": "cloudflare-workers",
+  "version": "2.0.0",
+}
+`;
+
+exports[`index, aliases, HEAD, validation and error codes remain available in both runtimes: worker /v1 1`] = `
+{
+  "description": "Read-only HTTP API for 车来了 (Chelaile) realtime bus, metro and transit data.",
+  "docs": "docs/API.md",
+  "endpoints": [
+    {
+      "description": "Service liveness probe",
+      "method": "GET",
+      "path": "/v1/health",
+    },
+    {
+      "description": "Supported cities (static dataset or upstream)",
+      "method": "GET",
+      "path": "/v1/cities",
+    },
+    {
+      "description": "City refresh interval / display config",
+      "method": "GET",
+      "path": "/v1/cities/config",
+    },
+    {
+      "description": "WGS-84 coordinates → Chinese address",
+      "method": "GET",
+      "path": "/v1/reverse-geocode",
+    },
+    {
+      "description": "Approximate caller location from an IP",
+      "method": "GET",
+      "path": "/v1/my-location",
+    },
+    {
+      "description": "Search lines, stops and POIs by keyword",
+      "method": "GET",
+      "path": "/v1/search",
+    },
+    {
+      "description": "Paginated 'see more' for one search category",
+      "method": "GET",
+      "path": "/v1/search/more",
+    },
+    {
+      "description": "Nearby stops + realtime arrivals",
+      "method": "GET",
+      "path": "/v1/stops/nearby",
+    },
+    {
+      "description": "All lines + buses + metro for a stop",
+      "method": "GET",
+      "path": "/v1/stops/detail",
+    },
+    {
+      "description": "Full line info: stops + live buses",
+      "method": "GET",
+      "path": "/v1/lines/detail",
+    },
+    {
+      "description": "Line polyline coordinates for maps",
+      "method": "GET",
+      "path": "/v1/lines/route",
+    },
+    {
+      "description": "Realtime buses + ETA for (line, stop)",
+      "method": "GET",
+      "path": "/v1/lines/realtime",
+    },
+    {
+      "description": "Nearest approaching bus for a stop",
+      "method": "GET",
+      "path": "/v1/lines/buses",
+    },
+    {
+      "description": "Per-trip schedule (rarely available)",
+      "method": "GET",
+      "path": "/v1/lines/timetable",
+    },
+    {
+      "description": "Batch refresh multiple (line, stop) pairs",
+      "method": "GET",
+      "path": "/v1/lines/refresh",
+    },
+    {
+      "description": "Bus + metro transit route planning",
+      "method": "GET",
+      "path": "/v1/transit/plan",
+    },
+  ],
+  "name": "chelaile-api",
+  "runtime": "cloudflare-workers",
+  "version": "2.0.0",
+}
+`;
+
+exports[`index, aliases, HEAD, validation and error codes remain available in both runtimes: worker /v1/ 1`] = `
+{
+  "description": "Read-only HTTP API for 车来了 (Chelaile) realtime bus, metro and transit data.",
+  "docs": "docs/API.md",
+  "endpoints": [
+    {
+      "description": "Service liveness probe",
+      "method": "GET",
+      "path": "/v1/health",
+    },
+    {
+      "description": "Supported cities (static dataset or upstream)",
+      "method": "GET",
+      "path": "/v1/cities",
+    },
+    {
+      "description": "City refresh interval / display config",
+      "method": "GET",
+      "path": "/v1/cities/config",
+    },
+    {
+      "description": "WGS-84 coordinates → Chinese address",
+      "method": "GET",
+      "path": "/v1/reverse-geocode",
+    },
+    {
+      "description": "Approximate caller location from an IP",
+      "method": "GET",
+      "path": "/v1/my-location",
+    },
+    {
+      "description": "Search lines, stops and POIs by keyword",
+      "method": "GET",
+      "path": "/v1/search",
+    },
+    {
+      "description": "Paginated 'see more' for one search category",
+      "method": "GET",
+      "path": "/v1/search/more",
+    },
+    {
+      "description": "Nearby stops + realtime arrivals",
+      "method": "GET",
+      "path": "/v1/stops/nearby",
+    },
+    {
+      "description": "All lines + buses + metro for a stop",
+      "method": "GET",
+      "path": "/v1/stops/detail",
+    },
+    {
+      "description": "Full line info: stops + live buses",
+      "method": "GET",
+      "path": "/v1/lines/detail",
+    },
+    {
+      "description": "Line polyline coordinates for maps",
+      "method": "GET",
+      "path": "/v1/lines/route",
+    },
+    {
+      "description": "Realtime buses + ETA for (line, stop)",
+      "method": "GET",
+      "path": "/v1/lines/realtime",
+    },
+    {
+      "description": "Nearest approaching bus for a stop",
+      "method": "GET",
+      "path": "/v1/lines/buses",
+    },
+    {
+      "description": "Per-trip schedule (rarely available)",
+      "method": "GET",
+      "path": "/v1/lines/timetable",
+    },
+    {
+      "description": "Batch refresh multiple (line, stop) pairs",
+      "method": "GET",
+      "path": "/v1/lines/refresh",
+    },
+    {
+      "description": "Bus + metro transit route planning",
+      "method": "GET",
+      "path": "/v1/transit/plan",
+    },
+  ],
+  "name": "chelaile-api",
+  "runtime": "cloudflare-workers",
+  "version": "2.0.0",
+}
+`;
+
+exports[`index, aliases, HEAD, validation and error codes remain available in both runtimes: worker /v1/nope GET 1`] = `
+{
+  "body": {
+    "error": {
+      "code": "not_found",
+      "hint": "See GET / for the endpoint index, or docs/API.md for the full reference.",
+      "message": "No API route matches /v1/nope.",
+    },
+  },
+  "status": 404,
+}
+`;
+
+exports[`index, aliases, HEAD, validation and error codes remain available in both runtimes: worker /v1/search GET 1`] = `
+{
+  "body": {
+    "error": {
+      "code": "invalid_params",
+      "details": [
+        {
+          "message": "Required",
+          "param": "city_id",
+        },
+        {
+          "message": "Required",
+          "param": "keyword",
+        },
+      ],
+      "message": "One or more request parameters are invalid.",
+    },
+  },
+  "status": 400,
+}
+`;
+
+exports[`index, aliases, HEAD, validation and error codes remain available in both runtimes: worker /v1/health POST 1`] = `
+{
+  "body": {
+    "error": {
+      "code": "method_not_allowed",
+      "hint": "All chelaile API endpoints are read-only and use GET.",
+      "message": "POST is not supported for /v1/health.",
+    },
+  },
+  "status": 405,
+}
+`;
