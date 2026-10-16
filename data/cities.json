@@ -1,7 +1,7 @@
 {
-  "updatedAt": "2026-10-12T13:41:13.840Z",
+  "updatedAt": "2026-10-16T08:09:47.774Z",
   "source": "chelaile:/wwd/ncitylist",
-  "count": 492,
+  "count": 493,
   "cities": [
     {
       "cityId": "027",
@@ -3444,6 +3444,13 @@
       "cityId": "609",
       "cityName": "遂宁",
       "pinyin": "SuiNing",
+      "supportSubway": false,
+      "hot": false
+    },
+    {
+      "cityId": "610",
+      "cityName": "文昌",
+      "pinyin": "WenChang",
       "supportSubway": false,
       "hot": false
     }
